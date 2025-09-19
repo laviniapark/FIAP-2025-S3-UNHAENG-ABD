@@ -1,0 +1,82 @@
+/ManagementApp.csproj
+
+# Build artifacts
+bin/
+obj/
+out/
+[Bb]uild/
+[Ll]og/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio
+.vs/
+.vscode/
+.idea/
+
+# Rider / JetBrains
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# NuGet
+*.nupkg
+*.snupkg
+*.nuspec
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Packages folder (se usar restore no build, pode ignorar)
+packages/
+*.nuget.props
+*.nuget.targets
+
+# Env files (credenciais locais)
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# Resharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# Entity Framework Migrations (snapshots podem ser ignorados se desejar)
+[Mm]igrations/
+
+# SQLLite/LocalDB (se usar)
+*.db
+*.sqlite
+*.mdf
+*.ldf
+
+# Publish
+publish/
+*.pubxml
+*.pubxml.user
+
+# Test results
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+*.coveragexml
+
+# Other
+*.swp
+*.tmp
+*.bak
+*.cache
+*.config

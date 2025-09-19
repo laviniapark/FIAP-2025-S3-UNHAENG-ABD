@@ -1,6 +1,7 @@
+using ManagementApp.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace ManagementApp.Models ;
+namespace ManagementApp.Infrastructure ;
 
     public class ManagementDb : DbContext
     {
