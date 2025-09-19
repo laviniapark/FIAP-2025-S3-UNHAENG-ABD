@@ -1,4 +1,4 @@
-namespace UnhaengABD.Models ;
+namespace ManagementApp.Models ;
 
     public class Endereco
     {

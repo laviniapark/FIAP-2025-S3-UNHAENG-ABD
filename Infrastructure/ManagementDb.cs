@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace UnhaengABD.Models ;
+namespace ManagementApp.Models ;
 
-    public class UnhaengDb : DbContext
+    public class ManagementDb : DbContext
     {
-        public UnhaengDb(DbContextOptions options) : base(options)
+        public ManagementDb(DbContextOptions options) : base(options)
         {
         }
         

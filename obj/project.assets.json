@@ -625,11 +625,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/laviniapark/Documents/ABD-2ANO-2SEM/UnhaengABD/UnhaengABD.csproj",
-      "projectName": "UnhaengABD",
-      "projectPath": "/Users/laviniapark/Documents/ABD-2ANO-2SEM/UnhaengABD/UnhaengABD.csproj",
+      "projectUniqueName": "/Users/laviniapark/Documents/ABD-2ANO-2SEM/ManagementApp/ManagementApp.csproj",
+      "projectName": "ManagementApp",
+      "projectPath": "/Users/laviniapark/Documents/ABD-2ANO-2SEM/ManagementApp/ManagementApp.csproj",
       "packagesPath": "/Users/laviniapark/.nuget/packages/",
-      "outputPath": "/Users/laviniapark/Documents/ABD-2ANO-2SEM/UnhaengABD/obj/",
+      "outputPath": "/Users/laviniapark/Documents/ABD-2ANO-2SEM/ManagementApp/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/laviniapark/.nuget/NuGet/NuGet.Config"
