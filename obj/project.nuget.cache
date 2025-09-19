@@ -1,8 +1,22 @@
 {
   "version": 2,
-  "dgSpecHash": "ZefUISNfJl0=",
+  "dgSpecHash": "y4mD5FQ44gE=",
   "success": true,
   "projectFilePath": "/Users/laviniapark/Documents/ABD-2ANO-2SEM/UnhaengABD/UnhaengABD.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "/Users/laviniapark/.nuget/packages/microsoft.entityframeworkcore/9.0.9/microsoft.entityframeworkcore.9.0.9.nupkg.sha512",
+    "/Users/laviniapark/.nuget/packages/microsoft.entityframeworkcore.abstractions/9.0.9/microsoft.entityframeworkcore.abstractions.9.0.9.nupkg.sha512",
+    "/Users/laviniapark/.nuget/packages/microsoft.entityframeworkcore.analyzers/9.0.9/microsoft.entityframeworkcore.analyzers.9.0.9.nupkg.sha512",
+    "/Users/laviniapark/.nuget/packages/microsoft.entityframeworkcore.relational/9.0.9/microsoft.entityframeworkcore.relational.9.0.9.nupkg.sha512",
+    "/Users/laviniapark/.nuget/packages/microsoft.extensions.caching.abstractions/9.0.9/microsoft.extensions.caching.abstractions.9.0.9.nupkg.sha512",
+    "/Users/laviniapark/.nuget/packages/microsoft.extensions.caching.memory/9.0.9/microsoft.extensions.caching.memory.9.0.9.nupkg.sha512",
+    "/Users/laviniapark/.nuget/packages/microsoft.extensions.configuration.abstractions/9.0.9/microsoft.extensions.configuration.abstractions.9.0.9.nupkg.sha512",
+    "/Users/laviniapark/.nuget/packages/microsoft.extensions.dependencyinjection/9.0.9/microsoft.extensions.dependencyinjection.9.0.9.nupkg.sha512",
+    "/Users/laviniapark/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/9.0.9/microsoft.extensions.dependencyinjection.abstractions.9.0.9.nupkg.sha512",
+    "/Users/laviniapark/.nuget/packages/microsoft.extensions.logging/9.0.9/microsoft.extensions.logging.9.0.9.nupkg.sha512",
+    "/Users/laviniapark/.nuget/packages/microsoft.extensions.logging.abstractions/9.0.9/microsoft.extensions.logging.abstractions.9.0.9.nupkg.sha512",
+    "/Users/laviniapark/.nuget/packages/microsoft.extensions.options/9.0.9/microsoft.extensions.options.9.0.9.nupkg.sha512",
+    "/Users/laviniapark/.nuget/packages/microsoft.extensions.primitives/9.0.9/microsoft.extensions.primitives.9.0.9.nupkg.sha512"
+  ],
   "logs": []
 }

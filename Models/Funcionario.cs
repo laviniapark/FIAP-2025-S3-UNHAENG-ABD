@@ -10,7 +10,7 @@ namespace UnhaengABD.Models ;
         
         public required CargoEnum Cargo { get; set; }
 
-        public bool? Ativo { get; set; } = true;
+        public bool Ativo { get; set; } = true;
         
         public Guid FilialId { get; set; }
         public Filial Filial { get; set; }

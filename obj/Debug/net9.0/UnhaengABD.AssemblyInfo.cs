@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("UnhaengABD")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6d916b5fe89872ab7699333a658ccc22293e8b85")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+17f80a04fbff04a1548b5afa4f12f317083c0b00")]
 [assembly: System.Reflection.AssemblyProductAttribute("UnhaengABD")]
 [assembly: System.Reflection.AssemblyTitleAttribute("UnhaengABD")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

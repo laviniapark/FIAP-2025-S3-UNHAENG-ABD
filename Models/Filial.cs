@@ -10,7 +10,7 @@ namespace UnhaengABD.Models ;
         
         public string? Telefone { get; set; }
         
-        public required DateTime DataAbertura { get; set; }
+        public DateTime? DataAbertura { get; set; }
         
         public DateTime? DataEncerramento { get; set; }
         
