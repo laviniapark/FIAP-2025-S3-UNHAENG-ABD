@@ -94,10 +94,12 @@ namespace ManagementApp.Endpoints ;
             {
                 var db = http.RequestServices.GetRequiredService<ManagementDb>();
 
-                if (!await db.Filiais.AnyAsync(f => f.FilialId == request.FilialId))
-                    return
-                        Results.BadRequest(
-                            new { message = "Filial de destino invalida ou inexistente", request.FilialId });
+                var filial = await db.Filiais
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(f => f.FilialId == request.FilialId);
+
+                if (filial is null)
+                    return Results.BadRequest(new { message = "Filial de destino inválida ou inexistente.", request.FilialId });
 
                 var func = new Funcionario
                 {
@@ -130,8 +132,6 @@ namespace ManagementApp.Endpoints ;
                 .AddEndpointFilter<IdempotentAPIEndpointFilter>()
                 .WithSummary("Cadastra um novo funcionario")
                 .WithDescription("Cadastra um novo funcionario no sistema. " +
-                                 "Se o cadastro for concluído com sucesso, será possível ver " +
-                                 "o caminho com ID para pesquisas. " +
                                  "Caso a filial não exista, retorna um erro 400.")
                 .Produces<FuncionarioResponse>(StatusCodes.Status201Created)
                 .Produces(StatusCodes.Status400BadRequest);
@@ -146,7 +146,11 @@ namespace ManagementApp.Endpoints ;
                 if (func is null)
                     return Results.NotFound(new { message = "Funcionario não encontrado", id });
 
-                if (!await db.Filiais.AnyAsync(f => f.FilialId == request.FilialId))
+                var filial = await db.Filiais
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(f => f.FilialId == request.FilialId);
+
+                if (filial is null)
                     return Results.BadRequest(new { message = "Filial de destino inválida ou inexistente.", request.FilialId });
                 
                 func.NomeCompleto = request.NomeCompleto;

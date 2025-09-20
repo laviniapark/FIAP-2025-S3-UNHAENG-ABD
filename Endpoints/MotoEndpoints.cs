@@ -95,10 +95,13 @@ namespace ManagementApp.Endpoints ;
             {
                 var db = http.RequestServices.GetRequiredService<ManagementDb>();
                 
-                if (!await db.Filiais.AnyAsync(f => f.FilialId == request.FilialId))
+                var filial = await db.Filiais
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(f => f.FilialId == request.FilialId);
+
+                if (filial is null)
                     return Results.BadRequest(new { message = "Filial de destino inválida ou inexistente.", request.FilialId });
-
-
+                
                 var moto = new Moto
                 {
                     Placa = request.Placa,
@@ -132,8 +135,6 @@ namespace ManagementApp.Endpoints ;
                 .AddEndpointFilter<IdempotentAPIEndpointFilter>()
                 .WithSummary("Cadastra uma nova moto")
                 .WithDescription("Cadastra uma nova moto no sistema. " +
-                                 "Se o cadastro for concluído com sucesso, será possível ver " +
-                                 "o caminho com ID para pesquisas. " +
                                  "Caso a filial não exista, retorna um erro 400.")
                 .Produces<MotoResponse>(StatusCodes.Status201Created)
                 .Produces(StatusCodes.Status400BadRequest);
@@ -149,10 +150,12 @@ namespace ManagementApp.Endpoints ;
                     if (moto is null)
                         return Results.NotFound(new { message = "Moto não encontrada", id });
 
-                    if (!await db.Filiais.AnyAsync(f => f.FilialId == request.FilialId))
-                        return
-                            Results.BadRequest(
-                                new { message = "Filial de destino inválida ou inexistente.", request.FilialId });
+                    var filial = await db.Filiais
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(f => f.FilialId == request.FilialId);
+
+                    if (filial is null)
+                        return Results.BadRequest(new { message = "Filial de destino inválida ou inexistente.", request.FilialId });
 
                     moto.Placa = request.Placa;
                     moto.Marca = request.Marca;

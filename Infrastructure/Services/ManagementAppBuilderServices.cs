@@ -16,7 +16,7 @@ namespace ManagementApp.Infrastructure.Services ;
         public static void RegisterManagementAppServices(this IServiceCollection services, IConfiguration configuration)
         {
             #region Database
-
+            
             services.AddDbContext<ManagementDb>(options => 
                 options.UseOracle(configuration.GetConnectionString("DefaultConnection")));
             

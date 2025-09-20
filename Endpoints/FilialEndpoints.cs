@@ -109,11 +109,9 @@ namespace ManagementApp.Endpoints ;
                 return Results.Ok(response);
             }).WithSummary("Retorna uma filial pelo CNPJ")
             .WithDescription("Retorna uma filial pelo CNPJ. " +
-                             "Caso não exista, retorna um erro 404 (Não Encontrado). " +
-                             "Caso o usuário tenha inserido o formato errado (com símbolos), retorna um erro 400 com explicação do erro")
+                             "Caso não exista, retorna um erro 404 (Não Encontrado). ")
             .Produces<FilialResponse>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound)
-            .Produces(StatusCodes.Status400BadRequest);
+            .Produces(StatusCodes.Status404NotFound);
 
             // POST
             builder.MapPost("/filiais",
@@ -166,13 +164,10 @@ namespace ManagementApp.Endpoints ;
                             )
                         );
 
-                    return Results.Created($"/filiais/{response.Cnpj}", response);
+                    return Results.Created($"/filiais/{response.FilialId}", response);
                 })
                 .AddEndpointFilter<IdempotentAPIEndpointFilter>()
                 .WithSummary("Cadastra uma nova filial")
-                .WithDescription("Cadastra uma nova filial no sistema. " +
-                                 "Se o cadastro for concluído com sucesso, será possível ver " +
-                                 "tanto o ID quanto o caminho com o cnpj incluso para pesquisas.")
                 .Produces<FilialResponse>(StatusCodes.Status201Created);
 
             // PUT
