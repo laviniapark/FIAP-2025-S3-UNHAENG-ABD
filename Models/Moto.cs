@@ -1,10 +1,15 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace ManagementApp.Models ;
 
+    [Table("TB_MOTOS")]
     public class Moto
     {
         public Guid MotoId { get; set; } = Guid.NewGuid();
         
         public required string Placa { get; set; }
+        
+        public required string Marca { get; set; }
         
         public required string Modelo  { get; set; }
         

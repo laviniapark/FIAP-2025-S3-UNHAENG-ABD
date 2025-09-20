@@ -1,8 +1,12 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace ManagementApp.Models ;
+
+    [Table("TB_FILIAIS")]
 
     public class Filial
     {
-        public Guid FilialId { get; set; } =  Guid.NewGuid();
+        public Guid FilialId { get; set; }
         
         public required string Nome { get; set; }
         
@@ -13,7 +17,7 @@ namespace ManagementApp.Models ;
         public DateTime? DataAbertura { get; set; }
         
         public DateTime? DataEncerramento { get; set; }
-        
+
         public Endereco Endereco { get; set; }
         
         public ICollection<Moto> Motos { get; set; } = new List<Moto>();

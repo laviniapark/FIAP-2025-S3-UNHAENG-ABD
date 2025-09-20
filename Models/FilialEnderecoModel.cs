@@ -14,7 +14,7 @@ namespace ManagementApp.Models ;
 
     public record FilialRequest(
         string Nome, 
-        long Cnpj, 
+        string Cnpj, 
         string? Telefone, 
         DateTime? DataAbertura, 
         DateTime? DataEncerramento,
@@ -35,7 +35,7 @@ namespace ManagementApp.Models ;
     public record FilialResponse(
         Guid FilialId,
         string Nome, 
-        long Cnpj, 
+        string Cnpj, 
         string? Telefone, 
         DateTime? DataAbertura, 
         DateTime? DataEncerramento,

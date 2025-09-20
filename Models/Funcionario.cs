@@ -1,5 +1,8 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace ManagementApp.Models ;
 
+    [Table("TB_FUNCIONARIOS")]
     public class Funcionario
     {
         public Guid FuncionarioId { get; set; } = Guid.NewGuid();

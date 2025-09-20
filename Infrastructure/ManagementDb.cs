@@ -5,14 +5,11 @@ namespace ManagementApp.Infrastructure ;
 
     public class ManagementDb : DbContext
     {
-        public ManagementDb(DbContextOptions options) : base(options)
-        {
-        }
-        
         public DbSet<Moto> Motos { get; set; }
         public DbSet<Funcionario> Funcionarios { get; set; }
         public DbSet<Filial> Filiais { get; set; }
-        public DbSet<Endereco> Enderecos { get; set; }
+        
+        public ManagementDb(DbContextOptions<ManagementDb> options) : base(options){}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

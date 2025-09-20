@@ -3,6 +3,7 @@ namespace ManagementApp.Models ;
     [Serializable]
     public record MotoRequest(
         string Placa, 
+        string Marca,
         string Modelo, 
         int Ano, 
         Moto.StatusEnum Status, 
@@ -11,7 +12,8 @@ namespace ManagementApp.Models ;
 
     public record MotoResponse(
         Guid Motoid, 
-        string Placa,  
+        string Placa,
+        string Marca,
         string Modelo, 
         int Ano, 
         Moto.StatusEnum Status, 

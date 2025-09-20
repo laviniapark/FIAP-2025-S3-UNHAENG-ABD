@@ -1,24 +1,22 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace ManagementApp.Models ;
 
     public class Endereco
     {
-        public Guid FilialId { get; set; }
+        public string CEP { get; set; }
         
-        public required string CEP { get; set; }
+        public string Logradouro { get; set; }
         
-        public required string Logradouro { get; set; }
-        
-        public required string Numero { get; set; }
+        public string Numero { get; set; }
         
         public string? Complemento { get; set; }
         
-        public required string Bairro { get; set; }
+        public string Bairro { get; set; }
         
-        public required string Cidade { get; set; }
+        public string Cidade { get; set; }
         
-        public required string UF { get; set; }
+        public string UF { get; set; }
         
-        public required string Pais { get; set; }
-        
-        public Filial Filial { get; set; }
+        public string Pais { get; set; }
     }
