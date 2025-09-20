@@ -1,5 +1,6 @@
 namespace ManagementApp.Models ;
 
+    [Serializable]
     public record FuncionarioRequest(
         string NomeCompleto,
         string Cpf,

@@ -1,5 +1,6 @@
 namespace ManagementApp.Models ;
 
+    [Serializable]
     public record EnderecoRequest(
         string CEP,
         string Logradouro,
@@ -13,7 +14,7 @@ namespace ManagementApp.Models ;
 
     public record FilialRequest(
         string Nome, 
-        string Cnpj, 
+        long Cnpj, 
         string? Telefone, 
         DateTime? DataAbertura, 
         DateTime? DataEncerramento,
@@ -34,7 +35,7 @@ namespace ManagementApp.Models ;
     public record FilialResponse(
         Guid FilialId,
         string Nome, 
-        string Cnpj, 
+        long Cnpj, 
         string? Telefone, 
         DateTime? DataAbertura, 
         DateTime? DataEncerramento,
