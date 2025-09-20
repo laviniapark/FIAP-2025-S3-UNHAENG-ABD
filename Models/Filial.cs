@@ -14,7 +14,7 @@ namespace ManagementApp.Models ;
         
         public DateTime? DataEncerramento { get; set; }
         
-        public required Endereco Endereco { get; set; }
+        public Endereco Endereco { get; set; }
         
         public ICollection<Moto> Motos { get; set; } = new List<Moto>();
         public ICollection<Funcionario> Funcionarios { get; set; } = new List<Funcionario>();

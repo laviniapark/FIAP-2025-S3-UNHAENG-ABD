@@ -20,5 +20,5 @@ namespace ManagementApp.Models ;
         
         public required string Pais { get; set; }
         
-        public required Filial Filial { get; set; }
+        public Filial Filial { get; set; }
     }
