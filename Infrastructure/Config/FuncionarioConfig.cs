@@ -23,7 +23,8 @@ namespace ManagementApp.Infrastructure.Config ;
             
             funcionario.HasOne(f => f.Filial)
                 .WithMany(f => f.Funcionarios)
-                .HasForeignKey(f => f.FilialId);
+                .HasForeignKey(f => f.FilialId)
+                .OnDelete(DeleteBehavior.Restrict);
             
             // SEEDS
             funcionario.HasData(

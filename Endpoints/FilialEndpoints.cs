@@ -121,9 +121,6 @@ namespace ManagementApp.Endpoints ;
                 {
                     var db = http.RequestServices.GetRequiredService<ManagementDb>();
                     
-                    if (string.IsNullOrWhiteSpace(filialRequest.Cnpj) || !Regex.IsMatch(filialRequest.Cnpj, @"^\d{14}$"))
-                        return Results.BadRequest("CNPJ inválido. Use 14 dígitos (ex.: 12345678000100)");
-                    
                     var dataAbertura = filialRequest.DataAbertura ?? DateTime.UtcNow.Date;
 
                     var filial = new Filial
@@ -173,19 +170,18 @@ namespace ManagementApp.Endpoints ;
                 })
                 .AddEndpointFilter<IdempotentAPIEndpointFilter>()
                 .WithSummary("Cadastra uma nova filial")
+                .WithDescription("Cadastra uma nova filial no sistema. " +
+                                 "Se o cadastro for concluído com sucesso, será possível ver " +
+                                 "tanto o ID quanto o caminho com o cnpj incluso para pesquisas.")
                 .Produces<FilialResponse>(StatusCodes.Status201Created);
 
             // PUT
             builder.MapPut("/filiais/{id:guid}", async (Guid id, FilialRequest request, ManagementDb db) =>
             {
-                var filial = await db.Filiais
-                    .Include(f => f.Endereco)
-                    .FirstOrDefaultAsync(f => f.FilialId == id);
+                var filial = await db.Filiais.FirstOrDefaultAsync(f => f.FilialId == id);
                 
                 if (filial is null)
                     return Results.NotFound(new { message = "Filial não encontrada", id });
-                if (string.IsNullOrWhiteSpace(request.Cnpj) || !Regex.IsMatch(request.Cnpj, @"^\d{14}$"))
-                    return Results.BadRequest("CNPJ inválido. Use 14 dígitos (ex.: 12345678000100)");
                 
                 filial.Nome = request.Nome;
                 filial.Cnpj = request.Cnpj;
@@ -208,11 +204,9 @@ namespace ManagementApp.Endpoints ;
             })
                 .WithSummary("Atualiza os dados de uma filial existente")
                 .WithDescription("Atualiza os dados de uma filial existente buscando pelo seu ID. " +
-                                 "Caso o ID passado esteja incorreto ou não exista, retorna um erro 404. " +
-                                 "Caso o CNPJ esteja no formato inválido, retorna um erro 400.")
+                                 "Caso o ID passado esteja incorreto ou não exista, retorna um erro 404.")
                 .Produces(StatusCodes.Status204NoContent)
-                .Produces(StatusCodes.Status404NotFound)
-                .Produces(StatusCodes.Status400BadRequest);
+                .Produces(StatusCodes.Status404NotFound);
 
             // SOFT DELETE
             builder.MapDelete("/filiais/{id:guid}/encerrar", async (Guid id, ManagementDb db) =>

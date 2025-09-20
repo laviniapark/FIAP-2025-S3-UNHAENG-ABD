@@ -19,7 +19,8 @@ namespace ManagementApp.Infrastructure.Config ;
             
             moto.HasOne(m => m.Filial)
                 .WithMany(f => f.Motos)
-                .HasForeignKey(m => m.FilialId);
+                .HasForeignKey(m => m.FilialId)
+                .OnDelete(DeleteBehavior.Restrict);
             
             // SEEDS
             moto.HasData(
