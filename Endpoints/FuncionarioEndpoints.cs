@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using IdempotentAPI.MinimalAPI;
 using ManagementApp.Infrastructure;
+using ManagementApp.Infrastructure.Pagination;
 using ManagementApp.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,9 +15,14 @@ namespace ManagementApp.Endpoints ;
                 .WithTags("Funcionario Endpoints");
             
             //GET ALL
-            group.MapGet("/funcionarios", async (ManagementDb db) =>
-                await db.Funcionarios
+            group.MapGet("", async ([AsParameters] PageParameters pageParam, ManagementDb db) =>
+            {
+                var page = pageParam.PageNumber < 1 ? 1 : pageParam.PageNumber;
+                var size = pageParam.PageSize is < 1 or > 100 ? 20 : pageParam.PageSize;
+
+                var query = db.Funcionarios
                     .AsNoTracking()
+                    .OrderBy(f => f.NomeCompleto)
                     .Include(f => f.Filial)
                     .Select(f => new FuncionarioResponse(
                         f.FuncionarioId,
@@ -25,15 +31,22 @@ namespace ManagementApp.Endpoints ;
                         f.Cargo,
                         f.Ativo,
                         f.Filial.Nome
-                        ))
-                    .ToListAsync())
-                .WithSummary("Retorna a lista de todos os funcionarios")
-                .WithDescription("Retorna a lista de todos os funcionarios, " +
-                                 "juntamente com o nome da Filial que ele pertence")
+                        ));
+                
+                var paged = await PagedList<FuncionarioResponse>.CreateAsync(query, page, size);
+
+                return Results.Ok(paged);
+            })
+                .WithSummary("Retorna lista paginada de Funcionarios")
+                .WithDescription("Retorna a lista paginada de funcionarios ordenada por Nome, " + 
+                                 "podendo ser definido a quantidade a ser mostrada por página. " +
+                                 "Dados informados: informaçao dos funcionarios , numero da pagina, " +
+                                 "quantidade de funcionarios por pagina, quantidade total de funcionarios cadastrados, " +
+                                 "se possui proxima pagina e se possui pagina anterior.")
                 .Produces<List<FuncionarioResponse>>(StatusCodes.Status200OK);
             
             // GET BY ID
-            group.MapGet("/funcionarios/{id:guid}",
+            group.MapGet("/{id:guid}",
                 async (ManagementDb db, [Description("Identificador unico do funcionario")] Guid id) =>
                 {
                     var funcionario = await db.Funcionarios
@@ -62,7 +75,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces(StatusCodes.Status404NotFound);
             
             // GET BY CPF
-            group.MapGet("/funcionarios/{cpf}",
+            group.MapGet("/{cpf}",
                 async (ManagementDb db, [Description("CPF do funcionario")] string cpf) =>
                 {
                     var funcionario = await db.Funcionarios
@@ -91,7 +104,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces(StatusCodes.Status404NotFound);
             
             // POST
-            group.MapPost("/funcionarios", async (HttpContext http, FuncionarioRequest request) =>
+            group.MapPost("", async (HttpContext http, FuncionarioRequest request) =>
             {
                 var db = http.RequestServices.GetRequiredService<ManagementDb>();
 
@@ -138,7 +151,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces(StatusCodes.Status400BadRequest);
             
             // PUT
-            group.MapPut("/funcionarios/{id:guid}",
+            group.MapPut("/{id:guid}",
                 async ([Description("Identificador unico do funcionario")] Guid id, FuncionarioRequest request, ManagementDb db) =>
             {
                 var func = await db.Funcionarios
@@ -172,7 +185,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces(StatusCodes.Status400BadRequest);
             
             // DELETE
-            group.MapDelete("/funcionarios/{id:guid}",
+            group.MapDelete("/{id:guid}",
                 async ([Description("Identificador unico do funcionario")] Guid id, ManagementDb db) =>
                 {
                     var func = await db.Funcionarios.FindAsync(id);

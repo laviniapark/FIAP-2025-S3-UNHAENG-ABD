@@ -2,7 +2,9 @@ using System.ComponentModel;
 using System.Text.RegularExpressions;
 using IdempotentAPI.MinimalAPI;
 using ManagementApp.Infrastructure;
+using ManagementApp.Infrastructure.Pagination;
 using ManagementApp.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ManagementApp.Endpoints ;
@@ -15,34 +17,47 @@ namespace ManagementApp.Endpoints ;
                 .WithTags("Filial Endpoints");
 
             // GET ALL
-            group.MapGet("/filiais", async (ManagementDb db) => 
-                    await db.Filiais
-                        .AsNoTracking()
-                        .Select(f => new FilialResponse(
-                            f.FilialId,
-                            f.Nome,
-                            f.Cnpj,
-                            f.Telefone,
-                            f.DataAbertura,
-                            f.DataEncerramento,
-                            new EnderecoResponse(
-                                f.Endereco.CEP,
-                                f.Endereco.Logradouro,
-                                f.Endereco.Numero,
-                                f.Endereco.Complemento,
-                                f.Endereco.Bairro,
-                                f.Endereco.Cidade,
-                                f.Endereco.UF,
-                                f.Endereco.Pais
-                                )
-                            ))
-                        .ToListAsync())
-                .WithSummary("Retorna a lista de todas as filiais")
-                .WithDescription("Retorna a lista de todas as filiais, juntamente com o endereço cadastrado")
+            group.MapGet("", async ([AsParameters] PageParameters pageParam, ManagementDb db) =>
+            {
+                var page = pageParam.PageNumber < 1 ? 1 : pageParam.PageNumber;
+                var size = pageParam.PageSize is < 1 or > 100 ? 20 : pageParam.PageSize;
+                
+                var query = db.Filiais
+                    .AsNoTracking()
+                    .OrderBy(f => f.Nome)
+                    .Select(f => new FilialResponse(
+                        f.FilialId,
+                        f.Nome,
+                        f.Cnpj,
+                        f.Telefone,
+                        f.DataAbertura,
+                        f.DataEncerramento,
+                        new EnderecoResponse(
+                            f.Endereco.CEP,
+                            f.Endereco.Logradouro,
+                            f.Endereco.Numero,
+                            f.Endereco.Complemento,
+                            f.Endereco.Bairro,
+                            f.Endereco.Cidade,
+                            f.Endereco.UF,
+                            f.Endereco.Pais
+                            )
+                        ));
+
+                var paged = await PagedList<FilialResponse>.CreateAsync(query, page, size);
+                
+                return Results.Ok(paged);
+            })
+                .WithSummary("Retorna lista paginada de Filiais")
+                .WithDescription("Retorna a lista paginada de filiais ordenada por Nome, " + 
+                                 "podendo ser definido a quantidade a ser mostrada por página. " +
+                                 "Dados informados: informaçao das filiais , numero da pagina, " +
+                                 "quantidade de filiais por pagina, quantidade total de filiais cadastradas, " +
+                                 "se possui proxima pagina e se possui pagina anterior.")
                 .Produces<List<FilialResponse>>(StatusCodes.Status200OK);
 
             // GET BY ID
-            group.MapGet("/filiais/{id:guid}",
+            group.MapGet("/{id:guid}",
                 async (ManagementDb db, [Description("Identificador único da Filial")] Guid id) =>
                 {
                     var filial = await db.Filiais
@@ -79,7 +94,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces(StatusCodes.Status404NotFound);
 
             // GET BY CNPJ
-            group.MapGet("/filiais/{cnpj}", async (ManagementDb db, [Description("CNPJ da Filial")] string cnpj) =>
+            group.MapGet("/{cnpj}", async (ManagementDb db, [Description("CNPJ da Filial")] string cnpj) =>
             {
                 var filial = await db.Filiais
                     .AsNoTracking()
@@ -115,7 +130,7 @@ namespace ManagementApp.Endpoints ;
             .Produces(StatusCodes.Status404NotFound);
 
             // POST
-            group.MapPost("/filiais",
+            group.MapPost("",
                 async (HttpContext http, FilialRequest filialRequest) =>
                 {
                     var db = http.RequestServices.GetRequiredService<ManagementDb>();
@@ -172,7 +187,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces<FilialResponse>(StatusCodes.Status201Created);
 
             // PUT
-            group.MapPut("/filiais/{id:guid}", async (Guid id, FilialRequest request, ManagementDb db) =>
+            group.MapPut("/{id:guid}", async (Guid id, FilialRequest request, ManagementDb db) =>
             {
                 var filial = await db.Filiais.FirstOrDefaultAsync(f => f.FilialId == id);
                 
@@ -205,7 +220,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces(StatusCodes.Status404NotFound);
 
             // SOFT DELETE
-            group.MapDelete("/filiais/{id:guid}/encerrar", async (Guid id, ManagementDb db) =>
+            group.MapDelete("/{id:guid}/encerrar", async (Guid id, ManagementDb db) =>
             {
                 var filial = await db.Filiais.FindAsync(id);
                 if (filial is null)

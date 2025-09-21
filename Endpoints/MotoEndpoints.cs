@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using IdempotentAPI.MinimalAPI;
 using ManagementApp.Infrastructure;
+using ManagementApp.Infrastructure.Pagination;
 using ManagementApp.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,9 +15,14 @@ namespace ManagementApp.Endpoints ;
                 .WithTags("Moto Endpoints");
             
             //GET ALL
-            group.MapGet("/motos", async (ManagementDb db) =>
-                await db.Motos
+            group.MapGet("", async ([AsParameters] PageParameters pageParam, ManagementDb db) =>
+            {
+                var page = pageParam.PageNumber < 1 ? 1 : pageParam.PageNumber;
+                var size = pageParam.PageSize is < 1 or > 100 ? 20 : pageParam.PageSize;
+                
+                var query = db.Motos
                     .AsNoTracking()
+                    .OrderBy(m => m.Placa)
                     .Include(m => m.Filial)
                     .Select(m => new MotoResponse(
                         m.MotoId,
@@ -25,14 +31,22 @@ namespace ManagementApp.Endpoints ;
                         m.Modelo,
                         m.Ano,
                         m.Status,
-                        m.Filial.Nome))
-                    .ToListAsync())
-                .WithSummary("Retorna a lista de todas as motos")
-                .WithDescription("Retorna a lista de todas as motos, juntamente com o nome da Filial que ela pertence")
+                        m.Filial.Nome));
+
+                var paged = await PagedList<MotoResponse>.CreateAsync(query, page, size);
+
+                return Results.Ok(paged);
+            })
+                .WithSummary("Retorna a lista paginada de Motos")
+                .WithDescription("Retorna a lista paginada de motos ordenada por Placa, " + 
+                                 "podendo ser definido a quantidade a ser mostrada por página. " +
+                                 "Dados informados: informaçao das motos , numero da pagina, " +
+                                 "quantidade de motos por pagina, quantidade total de motos cadastradas, " +
+                                 "se possui proxima pagina e se possui pagina anterior.")
                 .Produces<List<MotoResponse>>(StatusCodes.Status200OK);
             
             // GET BY ID
-            group.MapGet("/motos/{id:guid}",
+            group.MapGet("/{id:guid}",
                 async (ManagementDb db, [Description("Identificador unico da Moto")] Guid id) =>
                 {
                     var moto = await db.Motos
@@ -60,7 +74,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces(StatusCodes.Status404NotFound);
             
             // GET BY PLACA
-            group.MapGet("/motos/{placa}", async (ManagementDb db, [Description("Placa da Moto")] string placa) =>
+            group.MapGet("/{placa}", async (ManagementDb db, [Description("Placa da Moto")] string placa) =>
             {
                 
                 var p = placa.Trim().ToUpperInvariant();
@@ -92,7 +106,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces(StatusCodes.Status404NotFound);
             
             // POST
-            group.MapPost("/motos", async (HttpContext http, MotoRequest request) =>
+            group.MapPost("", async (HttpContext http, MotoRequest request) =>
             {
                 var db = http.RequestServices.GetRequiredService<ManagementDb>();
                 
@@ -141,7 +155,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces(StatusCodes.Status400BadRequest);
             
             // PUT
-            group.MapPut("/motos/{id:guid}",
+            group.MapPut("/{id:guid}",
                 async ([Description("Identificador unico da moto")] Guid id, MotoRequest request, ManagementDb db) =>
                 {
 
@@ -179,7 +193,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces(StatusCodes.Status400BadRequest);
             
             // DELETE
-            group.MapDelete("/motos/{id:guid}", async
+            group.MapDelete("/{id:guid}", async
                 ([Description("Identificador unico da moto")] Guid id, ManagementDb db) =>
                 {
                     var moto = await db.Motos.FindAsync(id);
