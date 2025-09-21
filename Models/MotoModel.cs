@@ -17,5 +17,16 @@ namespace ManagementApp.Models ;
         string Modelo, 
         int Ano, 
         Moto.StatusEnum Status, 
+        string FilialNome,
+        List<LinkModel> Links
+        );
+        
+    public record MotoResponseGA(
+        Guid Motoid, 
+        string Placa,
+        string Marca,
+        string Modelo, 
+        int Ano, 
+        Moto.StatusEnum Status, 
         string FilialNome
         );

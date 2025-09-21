@@ -24,7 +24,7 @@ namespace ManagementApp.Endpoints ;
                     .AsNoTracking()
                     .OrderBy(m => m.Placa)
                     .Include(m => m.Filial)
-                    .Select(m => new MotoResponse(
+                    .Select(m => new MotoResponseGA(
                         m.MotoId,
                         m.Placa,
                         m.Marca,
@@ -33,11 +33,10 @@ namespace ManagementApp.Endpoints ;
                         m.Status,
                         m.Filial.Nome));
 
-                var paged = await PagedList<MotoResponse>.CreateAsync(query, page, size);
+                var paged = await PagedList<MotoResponseGA>.CreateAsync(query, page, size);
 
                 return Results.Ok(paged);
-            })
-                .WithSummary("Retorna a lista paginada de Motos")
+            }).WithSummary("Retorna a lista paginada de Motos")
                 .WithDescription("Retorna a lista paginada de motos ordenada por Placa, " + 
                                  "podendo ser definido a quantidade a ser mostrada por página. " +
                                  "Dados informados: informaçao das motos , numero da pagina, " +
@@ -47,7 +46,7 @@ namespace ManagementApp.Endpoints ;
             
             // GET BY ID
             group.MapGet("/{id:guid}",
-                async (ManagementDb db, [Description("Identificador unico da Moto")] Guid id) =>
+                async (ManagementDb db, [Description("Identificador unico da Moto")] Guid id, LinkGenerator lg, HttpContext http) =>
                 {
                     var moto = await db.Motos
                         .AsNoTracking()
@@ -56,6 +55,14 @@ namespace ManagementApp.Endpoints ;
 
                     if (moto is null)
                         return Results.NotFound(new { message = "Moto não encontrada", id });
+                    
+                    var links = new List<LinkModel>
+                    {
+                        new(lg.GetPathByName(http, "GetMotoById", new {id})!, "self", "GET"),
+                        new(lg.GetPathByName(http, "GetMotoByPlaca", new {placa = moto.Placa})!, "getByPlaca", "GET"),
+                        new(lg.GetPathByName(http, "UpdateMoto", new {id})!, "update", "PUT"),
+                        new(lg.GetPathByName(http, "DeleteMoto", new {id})!, "delete", "DELETE")
+                    };
 
                     var response = new MotoResponse(
                         moto.MotoId,
@@ -64,17 +71,19 @@ namespace ManagementApp.Endpoints ;
                         moto.Modelo,
                         moto.Ano,
                         moto.Status,
-                        moto.Filial.Nome
+                        moto.Filial.Nome,
+                        links
                         );
                     
                     return Results.Ok(response);
-                }).WithSummary("Retorna uma moto pelo ID")
+                }).WithName("GetMotoById")
+                .WithSummary("Retorna uma moto pelo ID")
                 .WithDescription("Retorna uma moto buscando pelo ID, caso não exista, retorna um erro 404 (Nao Encontrado)")
                 .Produces<MotoResponse>(StatusCodes.Status200OK)
                 .Produces(StatusCodes.Status404NotFound);
             
             // GET BY PLACA
-            group.MapGet("/{placa}", async (ManagementDb db, [Description("Placa da Moto")] string placa) =>
+            group.MapGet("/{placa}", async (ManagementDb db, [Description("Placa da Moto")] string placa, LinkGenerator lg, HttpContext http) =>
             {
                 
                 var p = placa.Trim().ToUpperInvariant();
@@ -86,6 +95,14 @@ namespace ManagementApp.Endpoints ;
 
                 if (moto is null)
                     return Results.NotFound(new { message = "Moto não encontrada", placa });
+                
+                var links = new List<LinkModel>
+                {
+                    new(lg.GetPathByName(http, "GetMotoById", new {id = moto.MotoId})!, "getById", "GET"),
+                    new(lg.GetPathByName(http, "GetMotoByPlaca", new {placa})!, "self", "GET"),
+                    new(lg.GetPathByName(http, "UpdateMoto", new {id = moto.MotoId})!, "update", "PUT"),
+                    new(lg.GetPathByName(http, "DeleteMoto", new {id = moto.MotoId})!, "delete", "DELETE")
+                };
 
                 var response = new MotoResponse(
                     moto.MotoId,
@@ -94,11 +111,12 @@ namespace ManagementApp.Endpoints ;
                     moto.Modelo,
                     moto.Ano,
                     moto.Status,
-                    moto.Filial.Nome
+                    moto.Filial.Nome,
+                    links
                     );
 
                 return Results.Ok(response);
-            })
+            }).WithName("GetMotoByPlaca")
                 .WithSummary("Retorna uma moto pela placa")
                 .WithDescription("Retorna uma moto pela placa. " +
                                  "Caso não exista, retorna um erro 404 (Não Encontrado)")
@@ -106,7 +124,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces(StatusCodes.Status404NotFound);
             
             // POST
-            group.MapPost("", async (HttpContext http, MotoRequest request) =>
+            group.MapPost("", async (HttpContext http, MotoRequest request, LinkGenerator lg) =>
             {
                 var db = http.RequestServices.GetRequiredService<ManagementDb>();
                 
@@ -135,6 +153,14 @@ namespace ManagementApp.Endpoints ;
                     .Select(f => f.Nome)
                     .FirstAsync();
 
+                var links = new List<LinkModel>
+                {
+                    new(lg.GetPathByName(http, "GetMotoById", new {id = moto.MotoId})!, "getById", "GET"),
+                    new(lg.GetPathByName(http, "GetMotoByPlaca", new {placa = moto.Placa})!, "getByPlaca", "GET"),
+                    new(lg.GetPathByName(http, "UpdateMoto", new {id = moto.MotoId})!, "update", "PUT"),
+                    new(lg.GetPathByName(http, "DeleteMoto", new {id = moto.MotoId})!, "delete", "DELETE")
+                };
+                
                 var response = new MotoResponse(
                     moto.MotoId,
                     moto.Placa,
@@ -142,12 +168,12 @@ namespace ManagementApp.Endpoints ;
                     moto.Modelo,
                     moto.Ano,
                     moto.Status,
-                    filialNome
+                    filialNome,
+                    links
                     );
 
                 return Results.Created($"/motos/{response.Motoid}", response);
-            })
-                .AddEndpointFilter<IdempotentAPIEndpointFilter>()
+            }).AddEndpointFilter<IdempotentAPIEndpointFilter>()
                 .WithSummary("Cadastra uma nova moto")
                 .WithDescription("Cadastra uma nova moto no sistema. " +
                                  "Caso a filial não exista, retorna um erro 400.")
@@ -156,7 +182,7 @@ namespace ManagementApp.Endpoints ;
             
             // PUT
             group.MapPut("/{id:guid}",
-                async ([Description("Identificador unico da moto")] Guid id, MotoRequest request, ManagementDb db) =>
+                async ([Description("Identificador unico da moto")] Guid id, MotoRequest request, ManagementDb db, LinkGenerator lg, HttpContext http) =>
                 {
 
                     var moto = await db.Motos
@@ -171,6 +197,14 @@ namespace ManagementApp.Endpoints ;
 
                     if (filial is null)
                         return Results.BadRequest(new { message = "Filial de destino inválida ou inexistente.", request.FilialId });
+                    
+                    var links = new List<LinkModel>
+                    {
+                        new(lg.GetPathByName(http, "GetMotoById", new {id})!, "getById", "GET"),
+                        new(lg.GetPathByName(http, "GetMotoByPlaca", new {placa = moto.Placa})!, "getByPlaca", "GET"),
+                        new(lg.GetPathByName(http, "UpdateMoto", new {id})!, "self", "PUT"),
+                        new(lg.GetPathByName(http, "DeleteMoto", new {id})!, "delete", "DELETE")
+                    };
 
                     moto.Placa = request.Placa;
                     moto.Marca = request.Marca;
@@ -180,15 +214,35 @@ namespace ManagementApp.Endpoints ;
                     moto.FilialId = request.FilialId;
 
                     await db.SaveChangesAsync();
-                    return Results.NoContent();
+                    
+                    var filialNome = await db.Filiais
+                        .Where(f => f.FilialId == moto.FilialId)
+                        .Select(f => f.Nome)
+                        .FirstAsync();
 
-
-                })
+                    var response = new
+                    {
+                        message = "Moto atualizada com sucesso!",
+                        data = new MotoResponse(
+                            moto.MotoId,
+                            moto.Placa,
+                            moto.Marca,
+                            moto.Modelo,
+                            moto.Ano,
+                            moto.Status,
+                            filialNome,
+                            links
+                            )
+                    };
+                    
+                    return Results.Ok(response);
+                    
+                }).WithName("UpdateMoto")
                 .WithSummary("Atualiza os dados de uma moto existente")
                 .WithDescription("Atualiza os dados de uma moto existente buscando pelo seu ID. " +
                                  "Caso o ID passado esteja incorreto ou não exista, retorna um erro 404. " +
                                  "Caso a filial não exista, retorna um erro 400.")
-                .Produces(StatusCodes.Status204NoContent)
+                .Produces(StatusCodes.Status200OK)
                 .Produces(StatusCodes.Status404NotFound)
                 .Produces(StatusCodes.Status400BadRequest);
             
@@ -202,10 +256,11 @@ namespace ManagementApp.Endpoints ;
 
                     db.Motos.Remove(moto);
                     await db.SaveChangesAsync();
-                    return Results.NoContent();
-                })
+                    
+                    return Results.Ok(new {message = "Moto deletada com sucesso!"});
+                }).WithName("DeleteMoto")
                 .WithSummary("Deleta uma moto existente")
-                .Produces(StatusCodes.Status204NoContent)
+                .Produces(StatusCodes.Status200OK)
                 .Produces(StatusCodes.Status404NotFound);
             
             

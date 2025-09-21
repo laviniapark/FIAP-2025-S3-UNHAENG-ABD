@@ -15,5 +15,15 @@ namespace ManagementApp.Models ;
         string Cpf,
         Funcionario.CargoEnum Cargo,
         bool Ativo,
+        string FilialNome,
+        List<LinkModel> Links
+        );
+        
+    public record FuncionarioResponseGA(
+        Guid FuncionarioId,
+        string NomeCompleto,
+        string Cpf,
+        Funcionario.CargoEnum Cargo,
+        bool Ativo,
         string FilialNome
         );

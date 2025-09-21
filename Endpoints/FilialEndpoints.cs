@@ -25,7 +25,7 @@ namespace ManagementApp.Endpoints ;
                 var query = db.Filiais
                     .AsNoTracking()
                     .OrderBy(f => f.Nome)
-                    .Select(f => new FilialResponse(
+                    .Select(f => new FilialResponseGA(
                         f.FilialId,
                         f.Nome,
                         f.Cnpj,
@@ -44,11 +44,10 @@ namespace ManagementApp.Endpoints ;
                             )
                         ));
 
-                var paged = await PagedList<FilialResponse>.CreateAsync(query, page, size);
+                var paged = await PagedList<FilialResponseGA>.CreateAsync(query, page, size);
                 
                 return Results.Ok(paged);
-            })
-                .WithSummary("Retorna lista paginada de Filiais")
+            }).WithSummary("Retorna lista paginada de Filiais")
                 .WithDescription("Retorna a lista paginada de filiais ordenada por Nome, " + 
                                  "podendo ser definido a quantidade a ser mostrada por página. " +
                                  "Dados informados: informaçao das filiais , numero da pagina, " +
@@ -58,7 +57,7 @@ namespace ManagementApp.Endpoints ;
 
             // GET BY ID
             group.MapGet("/{id:guid}",
-                async (ManagementDb db, [Description("Identificador único da Filial")] Guid id) =>
+                async (ManagementDb db, [Description("Identificador único da Filial")] Guid id, LinkGenerator lg, HttpContext http) =>
                 {
                     var filial = await db.Filiais
                         .AsNoTracking()
@@ -66,6 +65,14 @@ namespace ManagementApp.Endpoints ;
 
                     if (filial is null)
                         return Results.NotFound(new { message = "Filial não encontrada", id });
+
+                    var links = new List<LinkModel>
+                    {
+                        new(lg.GetPathByName(http, "GetFilialById", new {id})!, "self", "GET"),
+                        new(lg.GetPathByName(http, "GetFilialByCnpj", new {cnpj = filial.Cnpj})!, "getByCnpj", "GET"),
+                        new(lg.GetPathByName(http, "UpdateFilial", new {id})!, "update", "PUT"),
+                        new(lg.GetPathByName(http, "ShutDownFilial", new {id})!, "shutdown", "DELETE")
+                    };
                     
                     var response = new FilialResponse(
                         filial.FilialId,
@@ -83,18 +90,20 @@ namespace ManagementApp.Endpoints ;
                             filial.Endereco.Cidade,
                             filial.Endereco.UF,
                             filial.Endereco.Pais
-                            )
+                            ),
+                        links
                         );
                     
                     return Results.Ok(response);
                 }
-                ).WithSummary("Retorna uma filial pelo ID")
+                ).WithName("GetFilialById")
+                .WithSummary("Retorna uma filial pelo ID")
                 .WithDescription("Retorna uma filial buscando pelo ID, caso não exista, retorna um erro 404 (Nao Encontrado)")
                 .Produces<FilialResponse>(StatusCodes.Status200OK)
                 .Produces(StatusCodes.Status404NotFound);
 
             // GET BY CNPJ
-            group.MapGet("/{cnpj}", async (ManagementDb db, [Description("CNPJ da Filial")] string cnpj) =>
+            group.MapGet("/{cnpj}", async (ManagementDb db, [Description("CNPJ da Filial")] string cnpj, LinkGenerator lg, HttpContext http) =>
             {
                 var filial = await db.Filiais
                     .AsNoTracking()
@@ -102,6 +111,14 @@ namespace ManagementApp.Endpoints ;
 
                 if (filial is null)
                     return Results.NotFound(new { message = "Filial não encontrada", cnpj });
+                
+                var links = new List<LinkModel>
+                {
+                    new(lg.GetPathByName(http, "GetFilialById", new {id = filial.FilialId})!, "getById", "GET"),
+                    new(lg.GetPathByName(http, "GetFilialByCnpj", new {cnpj})!, "self", "GET"),
+                    new(lg.GetPathByName(http, "UpdateFilial", new {id = filial.FilialId})!, "update", "PUT"),
+                    new(lg.GetPathByName(http, "ShutDownFilial", new {id = filial.FilialId})!, "shutdown", "DELETE")
+                };
                 
                 var response = new FilialResponse(
                     filial.FilialId,
@@ -119,11 +136,13 @@ namespace ManagementApp.Endpoints ;
                         filial.Endereco.Cidade,
                         filial.Endereco.UF,
                         filial.Endereco.Pais
-                        )
+                        ),
+                    links
                     );
                 
                 return Results.Ok(response);
-            }).WithSummary("Retorna uma filial pelo CNPJ")
+            }).WithName("GetFilialByCnpj")
+            .WithSummary("Retorna uma filial pelo CNPJ")
             .WithDescription("Retorna uma filial pelo CNPJ. " +
                              "Caso não exista, retorna um erro 404 (Não Encontrado). ")
             .Produces<FilialResponse>(StatusCodes.Status200OK)
@@ -131,7 +150,7 @@ namespace ManagementApp.Endpoints ;
 
             // POST
             group.MapPost("",
-                async (HttpContext http, FilialRequest filialRequest) =>
+                async (HttpContext http, FilialRequest filialRequest, LinkGenerator lg) =>
                 {
                     var db = http.RequestServices.GetRequiredService<ManagementDb>();
                     
@@ -161,6 +180,14 @@ namespace ManagementApp.Endpoints ;
                     db.Filiais.Add(filial);
                     await db.SaveChangesAsync();
                     
+                    var links = new List<LinkModel>
+                    {
+                        new(lg.GetPathByName(http, "GetFilialById", new {id = filial.FilialId})!, "getById", "GET"),
+                        new(lg.GetPathByName(http, "GetFilialByCnpj", new {cnpj = filial.Cnpj})!, "getByCnpj", "GET"),
+                        new(lg.GetPathByName(http, "UpdateFilial", new {id = filial.FilialId})!, "update", "PUT"),
+                        new(lg.GetPathByName(http, "ShutDownFilial", new {id = filial.FilialId})!, "shutdown", "DELETE")
+                    };
+                    
                     var response = new FilialResponse(
                         filial.FilialId,
                         filial.Nome,
@@ -177,22 +204,30 @@ namespace ManagementApp.Endpoints ;
                             filial.Endereco.Cidade,
                             filial.Endereco.UF,
                             filial.Endereco.Pais
-                            )
+                            ),
+                        links
                         );
 
                     return Results.Created($"/filiais/{response.FilialId}", response);
-                })
-                .AddEndpointFilter<IdempotentAPIEndpointFilter>()
+                }).AddEndpointFilter<IdempotentAPIEndpointFilter>()
                 .WithSummary("Cadastra uma nova filial")
                 .Produces<FilialResponse>(StatusCodes.Status201Created);
 
             // PUT
-            group.MapPut("/{id:guid}", async (Guid id, FilialRequest request, ManagementDb db) =>
+            group.MapPut("/{id:guid}", async (Guid id, FilialRequest request, ManagementDb db, LinkGenerator lg, HttpContext http) =>
             {
                 var filial = await db.Filiais.FirstOrDefaultAsync(f => f.FilialId == id);
                 
                 if (filial is null)
                     return Results.NotFound(new { message = "Filial não encontrada", id });
+                
+                var links = new List<LinkModel>
+                {
+                    new(lg.GetPathByName(http, "GetFilialById", new {id})!, "getById", "GET"),
+                    new(lg.GetPathByName(http, "GetFilialByCnpj", new {cnpj = filial.Cnpj})!, "getByCnpj", "GET"),
+                    new(lg.GetPathByName(http, "UpdateFilial", new {id})!, "self", "PUT"),
+                    new(lg.GetPathByName(http, "ShutDownFilial", new {id})!, "shutdown", "DELETE")
+                };
                 
                 filial.Nome = request.Nome;
                 filial.Cnpj = request.Cnpj;
@@ -210,13 +245,38 @@ namespace ManagementApp.Endpoints ;
                 filial.Endereco.Pais = request.Endereco.Pais;
                 
                 await db.SaveChangesAsync();
-                return Results.NoContent();
                 
-            })
+                var response = new
+                {
+                    message = "Filial atualizada com sucesso!",
+                    data = new FilialResponse(
+                        filial.FilialId,
+                        filial.Nome,
+                        filial.Cnpj,
+                        filial.Telefone,
+                        filial.DataAbertura,
+                        filial.DataEncerramento,
+                        new EnderecoResponse(
+                            filial.Endereco.CEP,
+                            filial.Endereco.Logradouro,
+                            filial.Endereco.Numero,
+                            filial.Endereco.Complemento,
+                            filial.Endereco.Bairro,
+                            filial.Endereco.Cidade,
+                            filial.Endereco.UF,
+                            filial.Endereco.Pais
+                            ),
+                        links
+                        )
+                };
+
+                return Results.Ok(response);
+                
+            }).WithName("UpdateFilial")
                 .WithSummary("Atualiza os dados de uma filial existente")
                 .WithDescription("Atualiza os dados de uma filial existente buscando pelo seu ID. " +
                                  "Caso o ID passado esteja incorreto ou não exista, retorna um erro 404.")
-                .Produces(StatusCodes.Status204NoContent)
+                .Produces(StatusCodes.Status200OK)
                 .Produces(StatusCodes.Status404NotFound);
 
             // SOFT DELETE
@@ -229,14 +289,14 @@ namespace ManagementApp.Endpoints ;
                 filial.DataEncerramento = DateTime.UtcNow.Date;
                 await db.SaveChangesAsync();
 
-                return Results.NoContent();
-            })
+                return Results.Ok(new {message = "Filial encerrada com sucesso!"});
+            }).WithName("ShutDownFilial")
                 .WithSummary("Encerra uma filial existente")
                 .WithDescription("Diferente de um DELETE normal, ele não vai apagar os dados. " +
                                  "Quando o usuário escolher encerrar, a data de encerramento vai ser " +
                                  "definida pela data que foi feita a requisição, e os dados da filial " +
                                  "continuarão existindo no banco, para fins de armazenamento de histórico")
-                .Produces(StatusCodes.Status204NoContent)
+                .Produces(StatusCodes.Status200OK)
                 .Produces(StatusCodes.Status404NotFound);
             
             return builder;

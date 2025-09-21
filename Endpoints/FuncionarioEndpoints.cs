@@ -24,7 +24,7 @@ namespace ManagementApp.Endpoints ;
                     .AsNoTracking()
                     .OrderBy(f => f.NomeCompleto)
                     .Include(f => f.Filial)
-                    .Select(f => new FuncionarioResponse(
+                    .Select(f => new FuncionarioResponseGA(
                         f.FuncionarioId,
                         f.NomeCompleto,
                         f.Cpf,
@@ -33,11 +33,10 @@ namespace ManagementApp.Endpoints ;
                         f.Filial.Nome
                         ));
                 
-                var paged = await PagedList<FuncionarioResponse>.CreateAsync(query, page, size);
+                var paged = await PagedList<FuncionarioResponseGA>.CreateAsync(query, page, size);
 
                 return Results.Ok(paged);
-            })
-                .WithSummary("Retorna lista paginada de Funcionarios")
+            }).WithSummary("Retorna lista paginada de Funcionarios")
                 .WithDescription("Retorna a lista paginada de funcionarios ordenada por Nome, " + 
                                  "podendo ser definido a quantidade a ser mostrada por página. " +
                                  "Dados informados: informaçao dos funcionarios , numero da pagina, " +
@@ -47,7 +46,7 @@ namespace ManagementApp.Endpoints ;
             
             // GET BY ID
             group.MapGet("/{id:guid}",
-                async (ManagementDb db, [Description("Identificador unico do funcionario")] Guid id) =>
+                async (ManagementDb db, [Description("Identificador unico do funcionario")] Guid id, LinkGenerator lg, HttpContext http) =>
                 {
                     var funcionario = await db.Funcionarios
                         .AsNoTracking()
@@ -56,6 +55,14 @@ namespace ManagementApp.Endpoints ;
 
                     if (funcionario is null)
                         return Results.NotFound(new { message = "Funcionario não encontrado", id });
+                    
+                    var links = new List<LinkModel>
+                    {
+                        new(lg.GetPathByName(http, "GetFuncionarioById", new {id})!, "self", "GET"),
+                        new(lg.GetPathByName(http, "GetFuncionarioByCpf", new {cpf = funcionario.Cpf})!, "getByCpf", "GET"),
+                        new(lg.GetPathByName(http, "UpdateFuncionario", new {id})!, "update", "PUT"),
+                        new(lg.GetPathByName(http, "DeleteFuncionario", new {id})!, "delete", "DELETE")
+                    };
 
                     var response = new FuncionarioResponse(
                         funcionario.FuncionarioId,
@@ -63,11 +70,12 @@ namespace ManagementApp.Endpoints ;
                         funcionario.Cpf,
                         funcionario.Cargo,
                         funcionario.Ativo,
-                        funcionario.Filial.Nome
+                        funcionario.Filial.Nome,
+                        links
                         );
 
                     return Results.Ok(response);
-                })
+                }).WithName("GetFuncionarioById")
                 .WithSummary("Retorna um funcionario pelo ID")
                 .WithDescription("Retorna um funcionario buscando pelo ID. " +
                                  "Caso não exista, retorna um erro 404.")
@@ -76,7 +84,7 @@ namespace ManagementApp.Endpoints ;
             
             // GET BY CPF
             group.MapGet("/{cpf}",
-                async (ManagementDb db, [Description("CPF do funcionario")] string cpf) =>
+                async (ManagementDb db, [Description("CPF do funcionario")] string cpf, LinkGenerator lg, HttpContext http) =>
                 {
                     var funcionario = await db.Funcionarios
                         .AsNoTracking()
@@ -85,6 +93,14 @@ namespace ManagementApp.Endpoints ;
 
                     if (funcionario is null)
                         return Results.NotFound(new { message = "Funcionario não encontrado", cpf });
+                    
+                    var links = new List<LinkModel>
+                    {
+                        new(lg.GetPathByName(http, "GetFuncionarioById", new {id = funcionario.FuncionarioId})!, "getById", "GET"),
+                        new(lg.GetPathByName(http, "GetFuncionarioByCpf", new {cpf})!, "self", "GET"),
+                        new(lg.GetPathByName(http, "UpdateFuncionario", new {id = funcionario.FuncionarioId})!, "update", "PUT"),
+                        new(lg.GetPathByName(http, "DeleteFuncionario", new {id = funcionario.FuncionarioId})!, "delete", "DELETE")
+                    };
 
                     var response = new FuncionarioResponse(
                         funcionario.FuncionarioId,
@@ -92,11 +108,12 @@ namespace ManagementApp.Endpoints ;
                         funcionario.Cpf,
                         funcionario.Cargo,
                         funcionario.Ativo,
-                        funcionario.Filial.Nome
+                        funcionario.Filial.Nome,
+                        links
                         );
 
                     return Results.Ok(response);
-                })
+                }).WithName("GetFuncionarioByCpf")
                 .WithSummary("Retorna um funcionario pelo CPF")
                 .WithDescription("Retorna um funcionario buscando pelo seu CPF. " +
                                  "Caso não exista, retorna um erro 404 (Não Encontrado)")
@@ -104,7 +121,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces(StatusCodes.Status404NotFound);
             
             // POST
-            group.MapPost("", async (HttpContext http, FuncionarioRequest request) =>
+            group.MapPost("", async (HttpContext http, FuncionarioRequest request, LinkGenerator lg) =>
             {
                 var db = http.RequestServices.GetRequiredService<ManagementDb>();
 
@@ -132,18 +149,26 @@ namespace ManagementApp.Endpoints ;
                     .Select(f => f.Nome)
                     .FirstAsync();
 
+                var links = new List<LinkModel>
+                {
+                    new(lg.GetPathByName(http, "GetFuncionarioById", new {id = func.FuncionarioId})!, "getById", "GET"),
+                    new(lg.GetPathByName(http, "GetFuncionarioByCpf", new {cpf = func.Cpf})!, "getByCpf", "GET"),
+                    new(lg.GetPathByName(http, "UpdateFuncionario", new {id = func.FuncionarioId})!, "update", "PUT"),
+                    new(lg.GetPathByName(http, "DeleteFuncionario", new {id = func.FuncionarioId})!, "delete", "DELETE")
+                };
+                
                 var response = new FuncionarioResponse(
                     func.FuncionarioId,
                     func.NomeCompleto,
                     func.Cpf,
                     func.Cargo,
                     func.Ativo,
-                    filialNome
+                    filialNome,
+                    links
                     );
                 
                 return Results.Created($"/funcionarios/{func.FuncionarioId}", response);
-            })
-                .AddEndpointFilter<IdempotentAPIEndpointFilter>()
+            }).AddEndpointFilter<IdempotentAPIEndpointFilter>()
                 .WithSummary("Cadastra um novo funcionario")
                 .WithDescription("Cadastra um novo funcionario no sistema. " +
                                  "Caso a filial não exista, retorna um erro 400.")
@@ -152,7 +177,7 @@ namespace ManagementApp.Endpoints ;
             
             // PUT
             group.MapPut("/{id:guid}",
-                async ([Description("Identificador unico do funcionario")] Guid id, FuncionarioRequest request, ManagementDb db) =>
+                async ([Description("Identificador unico do funcionario")] Guid id, FuncionarioRequest request, ManagementDb db, LinkGenerator lg, HttpContext http) =>
             {
                 var func = await db.Funcionarios
                     .FirstOrDefaultAsync(f => f.FuncionarioId == id);
@@ -167,6 +192,14 @@ namespace ManagementApp.Endpoints ;
                 if (filial is null)
                     return Results.BadRequest(new { message = "Filial de destino inválida ou inexistente.", request.FilialId });
                 
+                var links = new List<LinkModel>
+                {
+                    new(lg.GetPathByName(http, "GetFuncionarioById", new {id})!, "getById", "GET"),
+                    new(lg.GetPathByName(http, "GetFuncionarioByCpf", new {cpf = func.Cpf})!, "getByCpf", "GET"),
+                    new(lg.GetPathByName(http, "UpdateFuncionario", new {id})!, "self", "PUT"),
+                    new(lg.GetPathByName(http, "DeleteFuncionario", new {id})!, "delete", "DELETE")
+                };
+                
                 func.NomeCompleto = request.NomeCompleto;
                 func.Cpf = request.Cpf;
                 func.Cargo = request.Cargo;
@@ -174,13 +207,33 @@ namespace ManagementApp.Endpoints ;
                 func.FilialId = request.FilialId;
 
                 await db.SaveChangesAsync();
-                return Results.NoContent();
-            })
+                
+                var filialNome = await db.Filiais
+                    .Where(f => f.FilialId == func.FilialId)
+                    .Select(f => f.Nome)
+                    .FirstAsync();
+
+                var response = new
+                {
+                    message = "Funcionario atualizado com sucesso!",
+                    data = new FuncionarioResponse(
+                        func.FuncionarioId,
+                        func.NomeCompleto,
+                        func.Cpf,
+                        func.Cargo,
+                        func.Ativo,
+                        filialNome,
+                        links
+                        )
+                };
+                
+                return Results.Ok(response);
+            }).WithName("UpdateFuncionario")
                 .WithSummary("Atualiza os dados de um funcionario existente")
                 .WithDescription("Atualiza os dados de um funcionario buscando pelo seu ID. " +
                                  "Caso o ID passado esteja incorreto ou não exista, retorna um erro 404. " +
                                  "Caso a filial não exista, retorna um erro 400.")
-                .Produces(StatusCodes.Status204NoContent)
+                .Produces(StatusCodes.Status200OK)
                 .Produces(StatusCodes.Status404NotFound)
                 .Produces(StatusCodes.Status400BadRequest);
             
@@ -194,10 +247,10 @@ namespace ManagementApp.Endpoints ;
 
                     db.Funcionarios.Remove(func);
                     await db.SaveChangesAsync();
-                    return Results.NoContent();
-                })
+                    return Results.Ok(new {message = "Funcionario deletado com sucesso!"});
+                }).WithName("DeleteFuncionario")
                 .WithSummary("Deleta um funcionario existente")
-                .Produces(StatusCodes.Status204NoContent)
+                .Produces(StatusCodes.Status200OK)
                 .Produces(StatusCodes.Status404NotFound);
             
             return builder;

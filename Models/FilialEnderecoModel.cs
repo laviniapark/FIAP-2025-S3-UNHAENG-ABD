@@ -39,5 +39,17 @@ namespace ManagementApp.Models ;
         string? Telefone, 
         DateTime? DataAbertura, 
         DateTime? DataEncerramento,
+        EnderecoResponse Endereco,
+        List<LinkModel> Links
+        );
+        
+    public record FilialResponseGA(
+        Guid FilialId,
+        string Nome, 
+        string Cnpj, 
+        string? Telefone, 
+        DateTime? DataAbertura, 
+        DateTime? DataEncerramento,
         EnderecoResponse Endereco
         );
+    
