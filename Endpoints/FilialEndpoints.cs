@@ -11,10 +11,11 @@ namespace ManagementApp.Endpoints ;
     {
         public static RouteGroupBuilder MapFilialEndpoints(this RouteGroupBuilder builder)
         {
-            builder.WithTags("Filial Endpoints");
+            var group = builder.MapGroup("/filiais")
+                .WithTags("Filial Endpoints");
 
             // GET ALL
-            builder.MapGet("/filiais", async (ManagementDb db) => 
+            group.MapGet("/filiais", async (ManagementDb db) => 
                     await db.Filiais
                         .AsNoTracking()
                         .Select(f => new FilialResponse(
@@ -41,7 +42,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces<List<FilialResponse>>(StatusCodes.Status200OK);
 
             // GET BY ID
-            builder.MapGet("/filiais/{id:guid}",
+            group.MapGet("/filiais/{id:guid}",
                 async (ManagementDb db, [Description("Identificador único da Filial")] Guid id) =>
                 {
                     var filial = await db.Filiais
@@ -78,7 +79,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces(StatusCodes.Status404NotFound);
 
             // GET BY CNPJ
-            builder.MapGet("/filiais/{cnpj}", async (ManagementDb db, [Description("CNPJ da Filial")] string cnpj) =>
+            group.MapGet("/filiais/{cnpj}", async (ManagementDb db, [Description("CNPJ da Filial")] string cnpj) =>
             {
                 var filial = await db.Filiais
                     .AsNoTracking()
@@ -114,7 +115,7 @@ namespace ManagementApp.Endpoints ;
             .Produces(StatusCodes.Status404NotFound);
 
             // POST
-            builder.MapPost("/filiais",
+            group.MapPost("/filiais",
                 async (HttpContext http, FilialRequest filialRequest) =>
                 {
                     var db = http.RequestServices.GetRequiredService<ManagementDb>();
@@ -171,7 +172,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces<FilialResponse>(StatusCodes.Status201Created);
 
             // PUT
-            builder.MapPut("/filiais/{id:guid}", async (Guid id, FilialRequest request, ManagementDb db) =>
+            group.MapPut("/filiais/{id:guid}", async (Guid id, FilialRequest request, ManagementDb db) =>
             {
                 var filial = await db.Filiais.FirstOrDefaultAsync(f => f.FilialId == id);
                 
@@ -204,7 +205,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces(StatusCodes.Status404NotFound);
 
             // SOFT DELETE
-            builder.MapDelete("/filiais/{id:guid}/encerrar", async (Guid id, ManagementDb db) =>
+            group.MapDelete("/filiais/{id:guid}/encerrar", async (Guid id, ManagementDb db) =>
             {
                 var filial = await db.Filiais.FindAsync(id);
                 if (filial is null)

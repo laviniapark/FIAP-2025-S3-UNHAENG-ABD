@@ -10,10 +10,11 @@ namespace ManagementApp.Endpoints ;
     {
         public static RouteGroupBuilder MapFuncionarioEndpoints(this RouteGroupBuilder builder)
         {
-            builder.WithTags("Funcionario Endpoints");
+            var group = builder.MapGroup("/funcionarios")
+                .WithTags("Funcionario Endpoints");
             
             //GET ALL
-            builder.MapGet("/funcionarios", async (ManagementDb db) =>
+            group.MapGet("/funcionarios", async (ManagementDb db) =>
                 await db.Funcionarios
                     .AsNoTracking()
                     .Include(f => f.Filial)
@@ -32,7 +33,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces<List<FuncionarioResponse>>(StatusCodes.Status200OK);
             
             // GET BY ID
-            builder.MapGet("/funcionarios/{id:guid}",
+            group.MapGet("/funcionarios/{id:guid}",
                 async (ManagementDb db, [Description("Identificador unico do funcionario")] Guid id) =>
                 {
                     var funcionario = await db.Funcionarios
@@ -61,7 +62,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces(StatusCodes.Status404NotFound);
             
             // GET BY CPF
-            builder.MapGet("/funcionarios/{cpf}",
+            group.MapGet("/funcionarios/{cpf}",
                 async (ManagementDb db, [Description("CPF do funcionario")] string cpf) =>
                 {
                     var funcionario = await db.Funcionarios
@@ -90,7 +91,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces(StatusCodes.Status404NotFound);
             
             // POST
-            builder.MapPost("/funcionarios", async (HttpContext http, FuncionarioRequest request) =>
+            group.MapPost("/funcionarios", async (HttpContext http, FuncionarioRequest request) =>
             {
                 var db = http.RequestServices.GetRequiredService<ManagementDb>();
 
@@ -137,7 +138,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces(StatusCodes.Status400BadRequest);
             
             // PUT
-            builder.MapPut("/funcionarios/{id:guid}",
+            group.MapPut("/funcionarios/{id:guid}",
                 async ([Description("Identificador unico do funcionario")] Guid id, FuncionarioRequest request, ManagementDb db) =>
             {
                 var func = await db.Funcionarios
@@ -171,7 +172,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces(StatusCodes.Status400BadRequest);
             
             // DELETE
-            builder.MapDelete("/funcionarios/{id:guid}",
+            group.MapDelete("/funcionarios/{id:guid}",
                 async ([Description("Identificador unico do funcionario")] Guid id, ManagementDb db) =>
                 {
                     var func = await db.Funcionarios.FindAsync(id);

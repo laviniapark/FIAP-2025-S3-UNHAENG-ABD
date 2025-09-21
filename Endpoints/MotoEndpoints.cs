@@ -10,10 +10,11 @@ namespace ManagementApp.Endpoints ;
     {
         public static RouteGroupBuilder MapMotoEndpoints(this RouteGroupBuilder builder)
         {
-            builder.WithTags("Moto Endpoints");
+            var group = builder.MapGroup("/motos")
+                .WithTags("Moto Endpoints");
             
             //GET ALL
-            builder.MapGet("/motos", async (ManagementDb db) =>
+            group.MapGet("/motos", async (ManagementDb db) =>
                 await db.Motos
                     .AsNoTracking()
                     .Include(m => m.Filial)
@@ -31,7 +32,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces<List<MotoResponse>>(StatusCodes.Status200OK);
             
             // GET BY ID
-            builder.MapGet("/motos/{id:guid}",
+            group.MapGet("/motos/{id:guid}",
                 async (ManagementDb db, [Description("Identificador unico da Moto")] Guid id) =>
                 {
                     var moto = await db.Motos
@@ -59,7 +60,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces(StatusCodes.Status404NotFound);
             
             // GET BY PLACA
-            builder.MapGet("/motos/{placa}", async (ManagementDb db, [Description("Placa da Moto")] string placa) =>
+            group.MapGet("/motos/{placa}", async (ManagementDb db, [Description("Placa da Moto")] string placa) =>
             {
                 
                 var p = placa.Trim().ToUpperInvariant();
@@ -91,7 +92,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces(StatusCodes.Status404NotFound);
             
             // POST
-            builder.MapPost("/motos", async (HttpContext http, MotoRequest request) =>
+            group.MapPost("/motos", async (HttpContext http, MotoRequest request) =>
             {
                 var db = http.RequestServices.GetRequiredService<ManagementDb>();
                 
@@ -140,7 +141,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces(StatusCodes.Status400BadRequest);
             
             // PUT
-            builder.MapPut("/motos/{id:guid}",
+            group.MapPut("/motos/{id:guid}",
                 async ([Description("Identificador unico da moto")] Guid id, MotoRequest request, ManagementDb db) =>
                 {
 
@@ -178,7 +179,7 @@ namespace ManagementApp.Endpoints ;
                 .Produces(StatusCodes.Status400BadRequest);
             
             // DELETE
-            builder.MapDelete("/motos/{id:guid}", async
+            group.MapDelete("/motos/{id:guid}", async
                 ([Description("Identificador unico da moto")] Guid id, ManagementDb db) =>
                 {
                     var moto = await db.Motos.FindAsync(id);
