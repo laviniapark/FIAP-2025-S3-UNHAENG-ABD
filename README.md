@@ -15,6 +15,7 @@ Além disso, conta com recursos de versionamento de API, suporte a idempotência
 - [Funcionalidades](#funcionalidades)
 - [Como Rodar o Projeto](#como-rodar-o-projeto)
 - [Efetuar Testes no Programa](#efetuar-testes-no-programa)
+- [Fontes](#fontes)
 
 ## Integrantes
 
