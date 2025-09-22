@@ -8,7 +8,7 @@ namespace ManagementApp.Infrastructure.Middlewares ;
         {
             #region ApiKeys
 
-            var apiKeys = builder.Configuration.GetSection("ApiKeys").Get<List<string>>();
+            /*var apiKeys = builder.Configuration.GetSection("ApiKeys").Get<List<string>>();
 
             app.Use(async (ctx, next) =>
             {
@@ -35,7 +35,7 @@ namespace ManagementApp.Infrastructure.Middlewares ;
                 }
                 
                 await next();
-            });
+            });*/
 
             #endregion
 
