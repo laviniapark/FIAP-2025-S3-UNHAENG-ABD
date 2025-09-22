@@ -17,6 +17,7 @@ namespace ManagementApp.Models ;
         string Modelo, 
         int Ano, 
         Moto.StatusEnum Status, 
+        Guid FilialId,
         string FilialNome,
         List<LinkModel> Links
         );
@@ -28,5 +29,6 @@ namespace ManagementApp.Models ;
         string Modelo, 
         int Ano, 
         Moto.StatusEnum Status, 
+        Guid FilialId,
         string FilialNome
         );

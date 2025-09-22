@@ -30,6 +30,7 @@ namespace ManagementApp.Endpoints ;
                         f.Cpf,
                         f.Cargo,
                         f.Ativo,
+                        f.FilialId,
                         f.Filial.Nome
                         ));
                 
@@ -70,6 +71,7 @@ namespace ManagementApp.Endpoints ;
                         funcionario.Cpf,
                         funcionario.Cargo,
                         funcionario.Ativo,
+                        funcionario.FilialId,
                         funcionario.Filial.Nome,
                         links
                         );
@@ -108,6 +110,7 @@ namespace ManagementApp.Endpoints ;
                         funcionario.Cpf,
                         funcionario.Cargo,
                         funcionario.Ativo,
+                        funcionario.FilialId,
                         funcionario.Filial.Nome,
                         links
                         );
@@ -163,7 +166,8 @@ namespace ManagementApp.Endpoints ;
                     func.Cpf,
                     func.Cargo,
                     func.Ativo,
-                    filialNome,
+                    func.FilialId,
+                    func.Filial.Nome,
                     links
                     );
                 
@@ -222,6 +226,7 @@ namespace ManagementApp.Endpoints ;
                         func.Cpf,
                         func.Cargo,
                         func.Ativo,
+                        func.FilialId,
                         filialNome,
                         links
                         )

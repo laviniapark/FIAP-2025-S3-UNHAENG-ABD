@@ -15,6 +15,7 @@ namespace ManagementApp.Models ;
         string Cpf,
         Funcionario.CargoEnum Cargo,
         bool Ativo,
+        Guid FilialId,
         string FilialNome,
         List<LinkModel> Links
         );
@@ -25,5 +26,6 @@ namespace ManagementApp.Models ;
         string Cpf,
         Funcionario.CargoEnum Cargo,
         bool Ativo,
+        Guid FilialId,
         string FilialNome
         );

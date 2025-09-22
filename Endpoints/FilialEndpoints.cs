@@ -267,8 +267,7 @@ namespace ManagementApp.Endpoints ;
                             filial.Endereco.Pais
                             ),
                         links
-                        )
-                };
+                        )};
 
                 return Results.Ok(response);
                 

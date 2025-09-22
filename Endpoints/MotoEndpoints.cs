@@ -31,6 +31,7 @@ namespace ManagementApp.Endpoints ;
                         m.Modelo,
                         m.Ano,
                         m.Status,
+                        m.FilialId,
                         m.Filial.Nome));
 
                 var paged = await PagedList<MotoResponseGA>.CreateAsync(query, page, size);
@@ -71,6 +72,7 @@ namespace ManagementApp.Endpoints ;
                         moto.Modelo,
                         moto.Ano,
                         moto.Status,
+                        moto.FilialId,
                         moto.Filial.Nome,
                         links
                         );
@@ -111,6 +113,7 @@ namespace ManagementApp.Endpoints ;
                     moto.Modelo,
                     moto.Ano,
                     moto.Status,
+                    moto.FilialId,
                     moto.Filial.Nome,
                     links
                     );
@@ -168,6 +171,7 @@ namespace ManagementApp.Endpoints ;
                     moto.Modelo,
                     moto.Ano,
                     moto.Status,
+                    moto.FilialId,
                     filialNome,
                     links
                     );
@@ -230,6 +234,7 @@ namespace ManagementApp.Endpoints ;
                             moto.Modelo,
                             moto.Ano,
                             moto.Status,
+                            moto.FilialId,
                             filialNome,
                             links
                             )
