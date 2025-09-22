@@ -35,3 +35,4 @@ app.MapHealthChecks("/health", new HealthCheckOptions()
 });
 
 app.Run();
+
