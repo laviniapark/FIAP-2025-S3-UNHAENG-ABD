@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/laviniapark/Documents/ABD-2ANO-2SEM/ManagementApp/ManagementApp.csproj": {}
+    "/Users/laviniapark/Documents/2025-SPRINT3/2025-S3-ABD/FIAP-2025-S3-UNHAENG-ABD/ManagementApp.csproj": {}
   },
   "projects": {
-    "/Users/laviniapark/Documents/ABD-2ANO-2SEM/ManagementApp/ManagementApp.csproj": {
+    "/Users/laviniapark/Documents/2025-SPRINT3/2025-S3-ABD/FIAP-2025-S3-UNHAENG-ABD/ManagementApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/laviniapark/Documents/ABD-2ANO-2SEM/ManagementApp/ManagementApp.csproj",
+        "projectUniqueName": "/Users/laviniapark/Documents/2025-SPRINT3/2025-S3-ABD/FIAP-2025-S3-UNHAENG-ABD/ManagementApp.csproj",
         "projectName": "ManagementApp",
-        "projectPath": "/Users/laviniapark/Documents/ABD-2ANO-2SEM/ManagementApp/ManagementApp.csproj",
+        "projectPath": "/Users/laviniapark/Documents/2025-SPRINT3/2025-S3-ABD/FIAP-2025-S3-UNHAENG-ABD/ManagementApp.csproj",
         "packagesPath": "/Users/laviniapark/.nuget/packages/",
-        "outputPath": "/Users/laviniapark/Documents/ABD-2ANO-2SEM/ManagementApp/obj/",
+        "outputPath": "/Users/laviniapark/Documents/2025-SPRINT3/2025-S3-ABD/FIAP-2025-S3-UNHAENG-ABD/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/laviniapark/.nuget/NuGet/NuGet.Config"

@@ -8,7 +8,7 @@ namespace ManagementApp.Infrastructure.Middlewares ;
         {
             #region ApiKeys
 
-            /*var apiKeys = builder.Configuration.GetSection("ApiKeys").Get<List<string>>();
+            var apiKeys = builder.Configuration.GetSection("ApiKeys").Get<List<string>>();
 
             app.Use(async (ctx, next) =>
             {
@@ -22,7 +22,7 @@ namespace ManagementApp.Infrastructure.Middlewares ;
                     return;
                 }
 
-                if (endpoint?.DisplayName.Contains("managementitems") == true)
+                if (endpoint?.DisplayName.Contains("Management Endpoints V2") == true)
                 {
                     if (apiKeys != null && (
                         !ctx.Request.Headers.TryGetValue("X-API-Key", out var provided) ||
@@ -35,7 +35,7 @@ namespace ManagementApp.Infrastructure.Middlewares ;
                 }
                 
                 await next();
-            });*/
+            });
 
             #endregion
 
