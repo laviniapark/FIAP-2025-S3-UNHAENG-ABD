@@ -4,47 +4,44 @@ namespace ManagementApp.Infrastructure.Middlewares ;
 
     public static class ManagementAppMiddlewares
     {
-        public static void UseManagementAppMiddlewares(this WebApplication app, WebApplicationBuilder builder)
+        public static IApplicationBuilder UseManagementAppMiddlewares(this IApplicationBuilder app, IConfiguration config)
         {
             #region ApiKeys
 
-            var apiKeys = builder.Configuration.GetSection("ApiKeys").Get<List<string>>();
+            var apiKeys = config.GetSection("ApiKeys").Get<List<string>>();
 
-            app.Use(async (ctx, next) =>
-            {
-                var endpoint = ctx.GetEndpoint();
-                var allowAnonymous = endpoint?.Metadata.GetMetadata<
-                    Microsoft.AspNetCore.Authorization.IAllowAnonymous>() != null;
-
-                if (allowAnonymous)
+            app.UseWhen(
+                ctx => ctx.Request.Path.StartsWithSegments("/api/v2"),
+                branch =>
                 {
-                    await next();
-                    return;
-                }
-
-                if (endpoint?.DisplayName.Contains("Management Endpoints V2") == true)
-                {
-                    if (apiKeys != null && (
-                        !ctx.Request.Headers.TryGetValue("X-API-Key", out var provided) ||
-                        !apiKeys.Contains(provided)))
+                    branch.Use(async (ctx, next) =>
                     {
-                        ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                        await ctx.Response.WriteAsJsonAsync("API Key is missing or invalid.");
-                        return;
-                    }
-                }
-                
-                await next();
-            });
+                        var endpoint = ctx.GetEndpoint();
+                        var allowAnonymous = endpoint?.Metadata
+                            .GetMetadata<Microsoft.AspNetCore.Authorization.IAllowAnonymous>() != null;
+
+                        if (allowAnonymous)
+                        {
+                            await next();
+                            return;
+                        }
+                        
+                        if (!ctx.Request.Headers.TryGetValue("X-API-Key", out var provided) ||
+                            !apiKeys.Contains(provided))
+                        {
+                            ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            await ctx.Response.WriteAsJsonAsync("API Key is missing or invalid.");
+                            return;
+                        }
+
+                        await next();
+                    });
+                });
 
             #endregion
 
-            if (app.Environment.IsDevelopment())
-            {
-                app.MapOpenApi();
-                app.MapScalarApiReference();
-            }
-
             app.UseRateLimiter();
+
+            return app;
         }
     }
