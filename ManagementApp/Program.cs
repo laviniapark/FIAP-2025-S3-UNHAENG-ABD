@@ -29,10 +29,15 @@ app.MapGet("/", () => "Hello World!")
     .MapToApiVersion(1,0)
     .RequireRateLimiting("fixed");
 
-app.MapHealthChecks("/health", new HealthCheckOptions()
+app.MapHealthChecks("/api/v2/health", new HealthCheckOptions()
 {
+    Predicate = _ => true,
     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-});
+})
+    .WithName("Health Check")
+    .WithTags("Health Check Endpoint");
 
 app.Run();
+
+public partial class Program { }
 

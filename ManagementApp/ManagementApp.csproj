@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>ManagementApp</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,6 +29,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="9.0.9" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.9" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="9.0.9" />
+    <PackageReference Include="Microsoft.ML" Version="4.0.3" />
     <PackageReference Include="Oracle.EntityFrameworkCore" Version="9.23.90" />
     <PackageReference Include="Scalar.AspNetCore" Version="2.8.5" />
     <PackageReference Include="xunit.assert" Version="2.9.3" />

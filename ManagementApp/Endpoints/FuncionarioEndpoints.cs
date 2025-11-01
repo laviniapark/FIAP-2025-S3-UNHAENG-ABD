@@ -9,7 +9,7 @@ namespace ManagementApp.Endpoints ;
 
     public static class FuncionarioEndpoints
     {
-        public static RouteGroupBuilder MapFuncionarioEndpoints(this RouteGroupBuilder builder)
+        public static RouteGroupBuilder MapFuncionarioEndpoints(this RouteGroupBuilder builder, string version)
         {
             var group = builder.MapGroup("/funcionarios")
                 .WithTags("Funcionario Endpoints");
@@ -77,7 +77,7 @@ namespace ManagementApp.Endpoints ;
                         );
 
                     return Results.Ok(response);
-                }).WithName("GetFuncionarioById")
+                }).WithName($"GetFuncionarioById{version}")
                 .WithSummary("Retorna um funcionario pelo ID")
                 .WithDescription("Retorna um funcionario buscando pelo ID. " +
                                  "Caso não exista, retorna um erro 404.")
@@ -116,7 +116,7 @@ namespace ManagementApp.Endpoints ;
                         );
 
                     return Results.Ok(response);
-                }).WithName("GetFuncionarioByCpf")
+                }).WithName($"GetFuncionarioByCpf{version}")
                 .WithSummary("Retorna um funcionario pelo CPF")
                 .WithDescription("Retorna um funcionario buscando pelo seu CPF. " +
                                  "Caso não exista, retorna um erro 404 (Não Encontrado)")
@@ -233,7 +233,7 @@ namespace ManagementApp.Endpoints ;
                 };
                 
                 return Results.Ok(response);
-            }).WithName("UpdateFuncionario")
+            }).WithName($"UpdateFuncionario{version}")
                 .WithSummary("Atualiza os dados de um funcionario existente")
                 .WithDescription("Atualiza os dados de um funcionario buscando pelo seu ID. " +
                                  "Caso o ID passado esteja incorreto ou não exista, retorna um erro 404. " +
@@ -253,7 +253,7 @@ namespace ManagementApp.Endpoints ;
                     db.Funcionarios.Remove(func);
                     await db.SaveChangesAsync();
                     return Results.Ok(new {message = "Funcionario deletado com sucesso!"});
-                }).WithName("DeleteFuncionario")
+                }).WithName($"DeleteFuncionario{version}")
                 .WithSummary("Deleta um funcionario existente")
                 .Produces(StatusCodes.Status200OK)
                 .Produces(StatusCodes.Status404NotFound);

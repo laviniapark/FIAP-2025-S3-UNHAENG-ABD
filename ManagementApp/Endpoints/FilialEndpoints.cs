@@ -11,7 +11,7 @@ namespace ManagementApp.Endpoints ;
 
     public static class FilialEndpoints
     {
-        public static RouteGroupBuilder MapFilialEndpoints(this RouteGroupBuilder builder)
+        public static RouteGroupBuilder MapFilialEndpoints(this RouteGroupBuilder builder, string version)
         {
             var group = builder.MapGroup("/filiais")
                 .WithTags("Filial Endpoints");
@@ -96,7 +96,7 @@ namespace ManagementApp.Endpoints ;
                     
                     return Results.Ok(response);
                 }
-                ).WithName("GetFilialById")
+                ).WithName($"GetFilialById{version}")
                 .WithSummary("Retorna uma filial pelo ID")
                 .WithDescription("Retorna uma filial buscando pelo ID, caso não exista, retorna um erro 404 (Nao Encontrado)")
                 .Produces<FilialResponse>(StatusCodes.Status200OK)
@@ -141,7 +141,7 @@ namespace ManagementApp.Endpoints ;
                     );
                 
                 return Results.Ok(response);
-            }).WithName("GetFilialByCnpj")
+            }).WithName($"GetFilialByCnpj{version}")
             .WithSummary("Retorna uma filial pelo CNPJ")
             .WithDescription("Retorna uma filial pelo CNPJ. " +
                              "Caso não exista, retorna um erro 404 (Não Encontrado). ")
@@ -271,7 +271,7 @@ namespace ManagementApp.Endpoints ;
 
                 return Results.Ok(response);
                 
-            }).WithName("UpdateFilial")
+            }).WithName($"UpdateFilial{version}")
                 .WithSummary("Atualiza os dados de uma filial existente")
                 .WithDescription("Atualiza os dados de uma filial existente buscando pelo seu ID. " +
                                  "Caso o ID passado esteja incorreto ou não exista, retorna um erro 404.")
@@ -289,7 +289,7 @@ namespace ManagementApp.Endpoints ;
                 await db.SaveChangesAsync();
 
                 return Results.Ok(new {message = "Filial encerrada com sucesso!"});
-            }).WithName("ShutDownFilial")
+            }).WithName($"ShutDownFilial{version}")
                 .WithSummary("Encerra uma filial existente")
                 .WithDescription("Diferente de um DELETE normal, ele não vai apagar os dados. " +
                                  "Quando o usuário escolher encerrar, a data de encerramento vai ser " +

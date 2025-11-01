@@ -9,7 +9,7 @@ namespace ManagementApp.Endpoints ;
 
     public static class MotoEndpoints
     {
-        public static RouteGroupBuilder MapMotoEndpoints(this RouteGroupBuilder builder)
+        public static RouteGroupBuilder MapMotoEndpoints(this RouteGroupBuilder builder, string version)
         {
             var group = builder.MapGroup("/motos")
                 .WithTags("Moto Endpoints");
@@ -78,7 +78,7 @@ namespace ManagementApp.Endpoints ;
                         );
                     
                     return Results.Ok(response);
-                }).WithName("GetMotoById")
+                }).WithName($"GetMotoById{version}")
                 .WithSummary("Retorna uma moto pelo ID")
                 .WithDescription("Retorna uma moto buscando pelo ID, caso não exista, retorna um erro 404 (Nao Encontrado)")
                 .Produces<MotoResponse>(StatusCodes.Status200OK)
@@ -119,7 +119,7 @@ namespace ManagementApp.Endpoints ;
                     );
 
                 return Results.Ok(response);
-            }).WithName("GetMotoByPlaca")
+            }).WithName($"GetMotoByPlaca{version}")
                 .WithSummary("Retorna uma moto pela placa")
                 .WithDescription("Retorna uma moto pela placa. " +
                                  "Caso não exista, retorna um erro 404 (Não Encontrado)")
@@ -242,7 +242,7 @@ namespace ManagementApp.Endpoints ;
                     
                     return Results.Ok(response);
                     
-                }).WithName("UpdateMoto")
+                }).WithName($"UpdateMoto{version}")
                 .WithSummary("Atualiza os dados de uma moto existente")
                 .WithDescription("Atualiza os dados de uma moto existente buscando pelo seu ID. " +
                                  "Caso o ID passado esteja incorreto ou não exista, retorna um erro 404. " +
@@ -263,7 +263,7 @@ namespace ManagementApp.Endpoints ;
                     await db.SaveChangesAsync();
                     
                     return Results.Ok(new {message = "Moto deletada com sucesso!"});
-                }).WithName("DeleteMoto")
+                }).WithName($"DeleteMoto{version}")
                 .WithSummary("Deleta uma moto existente")
                 .Produces(StatusCodes.Status200OK)
                 .Produces(StatusCodes.Status404NotFound);
