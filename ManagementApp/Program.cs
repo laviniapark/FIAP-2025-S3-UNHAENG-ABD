@@ -5,14 +5,13 @@ using ManagementApp.Endpoints;
 using ManagementApp.Infrastructure.Middlewares;
 using ManagementApp.Infrastructure.Services;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.RegisterManagementAppServices(builder.Configuration);
 
 var app = builder.Build();
-
-app.UseManagementAppMiddlewares(builder);
 
 var apiVersionSet = app.NewApiVersionSet()
     .HasApiVersions(new List<ApiVersion> {
@@ -36,6 +35,14 @@ app.MapHealthChecks("/api/v2/health", new HealthCheckOptions()
 })
     .WithName("Health Check")
     .WithTags("Health Check Endpoint");
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+    app.MapScalarApiReference();
+}
+
+app.UseManagementAppMiddlewares(builder.Configuration);
 
 app.Run();
 
