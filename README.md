@@ -89,7 +89,7 @@ Vamos primeiro ter uma visão geral dos endpoints do projeto.
 
 Cole a URL gerada pelo .NET no navegador juntamente com o caminho do Scalar (http://localhost:5011/scalar). Irá aparecer a seguinte página:
 
-![Scalar](/docs/images/SCALAR.png)
+![Scalar](/ManagementApp/docs/images/SCALAR.png)
 
 Pelo Scalar, você poderá visualizar todos os endpoints disponíveis para cada tabela existente no projeto, incluindo descrições de o que cada método faz, e quais são os tipos de dados aceitos por cada atributo.
 
@@ -101,7 +101,7 @@ Aqui nós vamos utilizar o Health Check para ver se a aplicação está rodando 
 http://localhost:5011/health
 ```
 
-![Health Resposta](/docs/images/HEALTH-CHECK.png)
+![Health Resposta](/ManagementApp/docs/images/HEALTH-CHECK.png)
 
 **Agora iremos para o CRUD das tabelas, utilizaremos como base os prints da tabela "Filial", porém em cada tópico terá dados exemplos prontos e instruções de cada requisição**
 
@@ -209,7 +209,7 @@ FUNCIONARIOS
 
 3. Envie os dados
 
-![Resposta do metodo POST de Filiais](/docs/images/FILIAIS-POST-201.png)
+![Resposta do metodo POST de Filiais](/ManagementApp/docs/images/FILIAIS-POST-201.png)
 
 
 ### 5. Atualizar um Registro (PUT)
@@ -218,7 +218,7 @@ Utilize a URL: http://localhost:5011/api/v1/filiais/{id}
 
 Para o metodo PUT, copie todos os atributos do registro (juntamente com os dados originais), e mude os que você deseja atualizar **(não inclua o ID do proprio registro, inicie a partir do segundo atributo)**
 
-![Resposta do metodo PUT de Filiais](/docs/images/FILIAIS-PUT-200.png)
+![Resposta do metodo PUT de Filiais](/ManagementApp/docs/images/FILIAIS-PUT-200.png)
 
 ### 6. Deletar um Registro (DELETE)
 
@@ -226,7 +226,7 @@ Utilize a URL: http://localhost:5011/api/v1/filiais/{id}
 
 **OBS.: para a tabela FILIAIS, o endereço URL para deletar inclui ```/encerrar```, para mais detalhes consulte o Scalar**
 
-![Resposta do metodo DELETE de filial](/docs/images/FILIAIS-DELETE-200.png)
+![Resposta do metodo DELETE de filial](/ManagementApp/docs/images/FILIAIS-DELETE-200.png)
 
 ## Fontes
 
