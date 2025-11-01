@@ -53,7 +53,8 @@ namespace ManagementApp.Endpoints ;
                                  "Dados informados: informaçao das filiais , numero da pagina, " +
                                  "quantidade de filiais por pagina, quantidade total de filiais cadastradas, " +
                                  "se possui proxima pagina e se possui pagina anterior.")
-                .Produces<List<FilialResponse>>(StatusCodes.Status200OK);
+                .Produces<List<FilialResponse>>(StatusCodes.Status200OK)
+                .Produces(StatusCodes.Status401Unauthorized);
 
             // GET BY ID
             group.MapGet("/{id:guid}",
@@ -100,7 +101,8 @@ namespace ManagementApp.Endpoints ;
                 .WithSummary("Retorna uma filial pelo ID")
                 .WithDescription("Retorna uma filial buscando pelo ID, caso não exista, retorna um erro 404 (Nao Encontrado)")
                 .Produces<FilialResponse>(StatusCodes.Status200OK)
-                .Produces(StatusCodes.Status404NotFound);
+                .Produces(StatusCodes.Status404NotFound)
+                .Produces(StatusCodes.Status401Unauthorized);
 
             // GET BY CNPJ
             group.MapGet("/{cnpj}", async (ManagementDb db, [Description("CNPJ da Filial")] string cnpj, LinkGenerator lg, HttpContext http) =>
@@ -146,7 +148,8 @@ namespace ManagementApp.Endpoints ;
             .WithDescription("Retorna uma filial pelo CNPJ. " +
                              "Caso não exista, retorna um erro 404 (Não Encontrado). ")
             .Produces<FilialResponse>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound);
+            .Produces(StatusCodes.Status404NotFound)
+            .Produces(StatusCodes.Status401Unauthorized);
 
             // POST
             group.MapPost("",
@@ -211,7 +214,8 @@ namespace ManagementApp.Endpoints ;
                     return Results.Created($"/filiais/{response.FilialId}", response);
                 }).AddEndpointFilter<IdempotentAPIEndpointFilter>()
                 .WithSummary("Cadastra uma nova filial")
-                .Produces<FilialResponse>(StatusCodes.Status201Created);
+                .Produces<FilialResponse>(StatusCodes.Status201Created)
+                .Produces(StatusCodes.Status401Unauthorized);
 
             // PUT
             group.MapPut("/{id:guid}", async (Guid id, FilialRequest request, ManagementDb db, LinkGenerator lg, HttpContext http) =>
@@ -276,7 +280,8 @@ namespace ManagementApp.Endpoints ;
                 .WithDescription("Atualiza os dados de uma filial existente buscando pelo seu ID. " +
                                  "Caso o ID passado esteja incorreto ou não exista, retorna um erro 404.")
                 .Produces(StatusCodes.Status200OK)
-                .Produces(StatusCodes.Status404NotFound);
+                .Produces(StatusCodes.Status404NotFound)
+                .Produces(StatusCodes.Status401Unauthorized);
 
             // SOFT DELETE
             group.MapDelete("/{id:guid}/encerrar", async (Guid id, ManagementDb db) =>
@@ -296,7 +301,8 @@ namespace ManagementApp.Endpoints ;
                                  "definida pela data que foi feita a requisição, e os dados da filial " +
                                  "continuarão existindo no banco, para fins de armazenamento de histórico")
                 .Produces(StatusCodes.Status200OK)
-                .Produces(StatusCodes.Status404NotFound);
+                .Produces(StatusCodes.Status404NotFound)
+                .Produces(StatusCodes.Status401Unauthorized);
             
             return builder;
         }

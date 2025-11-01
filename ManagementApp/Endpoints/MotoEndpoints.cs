@@ -43,7 +43,8 @@ namespace ManagementApp.Endpoints ;
                                  "Dados informados: informaçao das motos , numero da pagina, " +
                                  "quantidade de motos por pagina, quantidade total de motos cadastradas, " +
                                  "se possui proxima pagina e se possui pagina anterior.")
-                .Produces<List<MotoResponse>>(StatusCodes.Status200OK);
+                .Produces<List<MotoResponse>>(StatusCodes.Status200OK)
+                .Produces(StatusCodes.Status401Unauthorized);
             
             // GET BY ID
             group.MapGet("/{id:guid}",
@@ -82,7 +83,8 @@ namespace ManagementApp.Endpoints ;
                 .WithSummary("Retorna uma moto pelo ID")
                 .WithDescription("Retorna uma moto buscando pelo ID, caso não exista, retorna um erro 404 (Nao Encontrado)")
                 .Produces<MotoResponse>(StatusCodes.Status200OK)
-                .Produces(StatusCodes.Status404NotFound);
+                .Produces(StatusCodes.Status404NotFound)
+                .Produces(StatusCodes.Status401Unauthorized);
             
             // GET BY PLACA
             group.MapGet("/{placa}", async (ManagementDb db, [Description("Placa da Moto")] string placa, LinkGenerator lg, HttpContext http) =>
@@ -124,7 +126,8 @@ namespace ManagementApp.Endpoints ;
                 .WithDescription("Retorna uma moto pela placa. " +
                                  "Caso não exista, retorna um erro 404 (Não Encontrado)")
                 .Produces<MotoResponse>(StatusCodes.Status200OK)
-                .Produces(StatusCodes.Status404NotFound);
+                .Produces(StatusCodes.Status404NotFound)
+                .Produces(StatusCodes.Status401Unauthorized);
             
             // POST
             group.MapPost("", async (HttpContext http, MotoRequest request, LinkGenerator lg) =>
@@ -182,7 +185,8 @@ namespace ManagementApp.Endpoints ;
                 .WithDescription("Cadastra uma nova moto no sistema. " +
                                  "Caso a filial não exista, retorna um erro 400.")
                 .Produces<MotoResponse>(StatusCodes.Status201Created)
-                .Produces(StatusCodes.Status400BadRequest);
+                .Produces(StatusCodes.Status400BadRequest)
+                .Produces(StatusCodes.Status401Unauthorized);
             
             // PUT
             group.MapPut("/{id:guid}",
@@ -249,7 +253,8 @@ namespace ManagementApp.Endpoints ;
                                  "Caso a filial não exista, retorna um erro 400.")
                 .Produces(StatusCodes.Status200OK)
                 .Produces(StatusCodes.Status404NotFound)
-                .Produces(StatusCodes.Status400BadRequest);
+                .Produces(StatusCodes.Status400BadRequest)
+                .Produces(StatusCodes.Status401Unauthorized);
             
             // DELETE
             group.MapDelete("/{id:guid}", async
@@ -266,7 +271,8 @@ namespace ManagementApp.Endpoints ;
                 }).WithName($"DeleteMoto{version}")
                 .WithSummary("Deleta uma moto existente")
                 .Produces(StatusCodes.Status200OK)
-                .Produces(StatusCodes.Status404NotFound);
+                .Produces(StatusCodes.Status404NotFound)
+                .Produces(StatusCodes.Status401Unauthorized);
             
             
             

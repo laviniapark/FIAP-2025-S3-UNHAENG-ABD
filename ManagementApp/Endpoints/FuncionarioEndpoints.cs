@@ -43,7 +43,8 @@ namespace ManagementApp.Endpoints ;
                                  "Dados informados: informaçao dos funcionarios , numero da pagina, " +
                                  "quantidade de funcionarios por pagina, quantidade total de funcionarios cadastrados, " +
                                  "se possui proxima pagina e se possui pagina anterior.")
-                .Produces<List<FuncionarioResponse>>(StatusCodes.Status200OK);
+                .Produces<List<FuncionarioResponse>>(StatusCodes.Status200OK)
+                .Produces(StatusCodes.Status401Unauthorized);
             
             // GET BY ID
             group.MapGet("/{id:guid}",
@@ -82,7 +83,8 @@ namespace ManagementApp.Endpoints ;
                 .WithDescription("Retorna um funcionario buscando pelo ID. " +
                                  "Caso não exista, retorna um erro 404.")
                 .Produces<FuncionarioResponse>(StatusCodes.Status200OK)
-                .Produces(StatusCodes.Status404NotFound);
+                .Produces(StatusCodes.Status404NotFound)
+                .Produces(StatusCodes.Status401Unauthorized);
             
             // GET BY CPF
             group.MapGet("/{cpf}",
@@ -121,7 +123,8 @@ namespace ManagementApp.Endpoints ;
                 .WithDescription("Retorna um funcionario buscando pelo seu CPF. " +
                                  "Caso não exista, retorna um erro 404 (Não Encontrado)")
                 .Produces<FuncionarioResponse>(StatusCodes.Status200OK)
-                .Produces(StatusCodes.Status404NotFound);
+                .Produces(StatusCodes.Status404NotFound)
+                .Produces(StatusCodes.Status401Unauthorized);
             
             // POST
             group.MapPost("", async (HttpContext http, FuncionarioRequest request, LinkGenerator lg) =>
@@ -177,7 +180,8 @@ namespace ManagementApp.Endpoints ;
                 .WithDescription("Cadastra um novo funcionario no sistema. " +
                                  "Caso a filial não exista, retorna um erro 400.")
                 .Produces<FuncionarioResponse>(StatusCodes.Status201Created)
-                .Produces(StatusCodes.Status400BadRequest);
+                .Produces(StatusCodes.Status400BadRequest)
+                .Produces(StatusCodes.Status401Unauthorized);
             
             // PUT
             group.MapPut("/{id:guid}",
@@ -240,7 +244,8 @@ namespace ManagementApp.Endpoints ;
                                  "Caso a filial não exista, retorna um erro 400.")
                 .Produces(StatusCodes.Status200OK)
                 .Produces(StatusCodes.Status404NotFound)
-                .Produces(StatusCodes.Status400BadRequest);
+                .Produces(StatusCodes.Status400BadRequest)
+                .Produces(StatusCodes.Status401Unauthorized);
             
             // DELETE
             group.MapDelete("/{id:guid}",
@@ -256,7 +261,8 @@ namespace ManagementApp.Endpoints ;
                 }).WithName($"DeleteFuncionario{version}")
                 .WithSummary("Deleta um funcionario existente")
                 .Produces(StatusCodes.Status200OK)
-                .Produces(StatusCodes.Status404NotFound);
+                .Produces(StatusCodes.Status404NotFound)
+                .Produces(StatusCodes.Status401Unauthorized);
             
             return builder;
         }

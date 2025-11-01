@@ -38,7 +38,8 @@ public static class PredictMaintenanceEndpoint
         .WithSummary("Prevê o custo de manutenção de uma moto")
         .WithDescription("Recebe dados como a quilometragem e os anos de uso de uma moto para calcular uma estimativa do custo de manutenção")
         .Produces(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status400BadRequest);
+        .Produces(StatusCodes.Status400BadRequest)
+        .Produces(StatusCodes.Status401Unauthorized);
 
         return builder;
     }
