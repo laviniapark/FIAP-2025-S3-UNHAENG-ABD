@@ -13,12 +13,23 @@ namespace ManagementApp.Infrastructure.Services ;
 
     public static class ManagementAppBuilderServices
     {
-        public static void RegisterManagementAppServices(this IServiceCollection services, IConfiguration configuration)
+        public static void RegisterManagementAppServices(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            IWebHostEnvironment environment)
         {
             #region Database
-            
-            services.AddDbContext<ManagementDb>(options => 
-                options.UseOracle(configuration.GetConnectionString("DefaultConnection")));
+
+            if (environment.IsEnvironment("Testing"))
+            {
+                services.AddDbContext<ManagementDb>(options =>
+                    options.UseInMemoryDatabase("ManagementDb"));
+            }
+            else
+            {
+                services.AddDbContext<ManagementDb>(options => 
+                    options.UseOracle(configuration.GetConnectionString("DefaultConnection")));   
+            }
             
             #endregion
             
