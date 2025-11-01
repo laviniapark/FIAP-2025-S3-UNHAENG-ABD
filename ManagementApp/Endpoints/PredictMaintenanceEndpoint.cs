@@ -28,16 +28,17 @@ public static class PredictMaintenanceEndpoint
         v2Group.MapPost("", (MotoData input) =>
         {
             var prediction = predEngine.Predict(input);
-            return Results.Ok(new
-            {
-                input.Quilometragem,
-                input.AnosUso,
-                CustoPrevisto = Math.Round(prediction.CustoPrevisto, 2)
-            });
+            var response = new PredictResponse(
+                Quilometragem: input.Quilometragem,
+                AnosUso: input.AnosUso,
+                CustoPrevisto: Math.Round(prediction.CustoPrevisto, 2)
+                );
+            
+            return Results.Ok(response);
         })
         .WithSummary("Prevê o custo de manutenção de uma moto")
         .WithDescription("Recebe dados como a quilometragem e os anos de uso de uma moto para calcular uma estimativa do custo de manutenção")
-        .Produces(StatusCodes.Status200OK)
+        .Produces<PredictResponse>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status401Unauthorized);
 
